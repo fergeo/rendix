@@ -1,0 +1,26 @@
+{
+  "name": "rendix",
+  "version": "1.0.0",
+  "description": "Desarrollo de la API de la plataforma rendix",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fergeo/rendix/tree/main"
+  },
+  "keywords": [
+    "node",
+    "js"
+  ],
+  "author": "Fernando Espindola",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
