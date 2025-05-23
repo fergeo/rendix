@@ -1,0 +1,16 @@
+doctype html
+html
+    head
+        title Panel Administrador
+    body
+        h1 Bienvenido administrador #{usuario}
+        p Selecciona una opción:
+
+        form(action="/inscripcion", method="get")
+            button(type="submit") Inscripción
+
+        form(action="/asistencia", method="get")
+            button(type="submit") Listar Asistencia
+
+        form(action="/recibos", method="get")
+            button(type="submit") Aceptar Recibos
