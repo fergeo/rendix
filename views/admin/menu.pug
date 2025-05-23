@@ -1,16 +1,51 @@
 doctype html
 html
     head
-        title Panel Administrador
+        meta(charset="UTF-8")
+        title Menú Administrador
+        style.
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f7f7f7;
+                padding: 30px;
+                text-align: center;
+            }
+            h1 {
+                color: #333;
+            }
+            .botones {
+                margin-top: 30px;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                background-color: #4CAF50;
+                border: none;
+                color: white;
+                border-radius: 5px;
+                width: 200px;
+            }
+            button.logout {
+                background-color: #e53935;
+            }
+            button.logout:hover {
+                background-color: #c62828;
+            }
+
     body
-        h1 Bienvenido administrador #{usuario}
-        p Selecciona una opción:
+        h1 Bienvenido, #{usuario}
 
-        form(action="/inscripcion", method="get")
-            button(type="submit") Inscripción
-
-        form(action="/asistencia", method="get")
-            button(type="submit") Listar Asistencia
-
-        form(action="/recibos", method="get")
-            button(type="submit") Aceptar Recibos
+        .botones
+            form(action="/admin/cursos", method="get")
+                button Cursos
+            form(action="/admin/inscripciones", method="get")
+                button Inscripciones
+            form(action="/admin/asistencias", method="get")
+                button Listar Asistencias
+            form(action="/logout", method="post")
+                button.logout Cerrar sesión
