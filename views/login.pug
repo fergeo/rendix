@@ -1,0 +1,21 @@
+doctype html
+html
+    head
+        title Login
+    body
+        h1 Login
+    form(action="/login", method="POST")
+        div
+            label(for="usuario") Usuario:
+            input(type="text", name="usuario", id="usuario", required)
+        div
+            label(for="contrasena") Contraseña:
+            input(type="password", name="contrasena", id="contrasena", required)
+        div
+            label(for="rol") Rol:
+            select(name="rol", id="rol", required)
+                option(value="administrador") Administrador
+                option(value="alumno") Alumno
+                option(value="docente") Docente
+        div
+            button(type="submit") Iniciar sesión
