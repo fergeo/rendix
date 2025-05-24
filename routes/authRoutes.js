@@ -8,8 +8,12 @@ router.get('/login', (req, res) => {
     res.render('login');
 });
 
-router.post('/logout', logout);
-
 router.post('/login', loginHandler);
+
+router.get('/admin/cursos', (req, res) => {
+    res.render('admin/cursos');
+});
+
+router.post('/logout', logout);
 
 export default router;

@@ -1,0 +1,135 @@
+doctype html
+html
+  head
+    meta(charset="UTF-8")
+    title Modificar Curso
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        margin: 30px;
+      }
+      h1 {
+        color: #333;
+      }
+      form {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        max-width: 500px;
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+      }
+      input[type="text"], select {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        box-sizing: border-box;
+      }
+      .botones {
+        margin-top: 20px;
+        display: flex;
+        gap: 15px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        border: none;
+        color: white;
+      }
+      button.aceptar {
+        background-color: #4CAF50;
+      }
+      button.cancelar {
+        background-color: #e53935;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      button.modificar {
+        background-color: #2196F3;
+      }
+  body
+    h1 Modificación de Curso
+
+    form#modificarCursoForm(action="/admin/cursos/modificar" method="post")
+      input(type="hidden" name="cursoId" id="cursoId")
+
+      label(for="nombre") Nombre
+      input(type="text" id="nombre" name="nombre" required)
+
+      label(for="carrera") Curso o Carrera
+      input(type="text" id="carrera" name="carrera" required)
+
+      label(for="dia") Día
+      select(id="dia" name="dia" required)
+        option(value="" disabled selected) -- Selecciona un día --
+        option(value="Lunes") Lunes
+        option(value="Martes") Martes
+        option(value="Miércoles") Miércoles
+        option(value="Jueves") Jueves
+        option(value="Viernes") Viernes
+        option(value="Sábado") Sábado
+        option(value="Domingo") Domingo
+
+      label(for="horario") Horario
+      input(type="text" id="horario" name="horario" placeholder="Ejemplo: 08:00 - 10:00" required)
+
+      .botones
+        button.aceptar(type="submit") Aceptar
+        button.cancelar(type="button" onclick="resetForm()") Cancelar
+
+    h2 Cursos disponibles
+
+    table
+      thead
+        tr
+          th Seleccionar
+          th Nombre
+          th Carrera
+          th Día
+          th Horario
+          th Acción
+      tbody
+        //- Aquí se debe iterar la lista de cursos, por ejemplo con pug:
+        each curso in cursos
+          tr
+            td
+              input(type="radio" name="seleccionarCurso" value=curso.id onclick=`cargarCurso('${curso.id}', '${curso.nombre}', '${curso.carrera}', '${curso.dia}', '${curso.horario}')`)
+            td #{curso.nombre}
+            td #{curso.carrera}
+            td #{curso.dia}
+            td #{curso.horario}
+            td
+              button.modificar(type="button" onclick=`cargarCurso('${curso.id}', '${curso.nombre}', '${curso.carrera}', '${curso.dia}', '${curso.horario}')`) Modificar
+
+    script.
+      function cargarCurso(id, nombre, carrera, dia, horario) {
+        document.getElementById('cursoId').value = id;
+        document.getElementById('nombre').value = nombre;
+        document.getElementById('carrera').value = carrera;
+        document.getElementById('dia').value = dia;
+        document.getElementById('horario').value = horario;
+      }
+
+      function resetForm() {
+        document.getElementById('modificarCursoForm').reset();
+        document.getElementById('cursoId').value = '';
+        // también deselecciona radios
+        const radios = document.getElementsByName('seleccionarCurso');
+        radios.forEach(r => r.checked = false);
+      }

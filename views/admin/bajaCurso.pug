@@ -1,0 +1,79 @@
+doctype html
+html
+  head
+    meta(charset="UTF-8")
+    title Listado de Cursos
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        margin: 30px;
+      }
+      h1 {
+        color: #333;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        border: none;
+        color: white;
+        margin-right: 10px;
+      }
+      button.borrar {
+        background-color: #e53935;
+      }
+      button.cancelar {
+        background-color: #757575;
+      }
+  body
+    h1 Cursos disponibles
+
+    form(action="/admin/cursos/borrar" method="post" id="borrarCursosForm")
+      table
+        thead
+          tr
+            th Seleccionar
+            th Nombre
+            th Carrera
+            th Día
+            th Horario
+        tbody
+          each curso in cursos
+            tr
+              td
+                input(type="checkbox" name="cursosSeleccionados" value=curso.id)
+              td #{curso.nombre}
+              td #{curso.carrera}
+              td #{curso.dia}
+              td #{curso.horario}
+
+      button.borrar(type="submit" onclick="return confirmarBorrado()") Borrar
+      button.cancelar(type="button" onclick="cancelar()") Cancelar
+
+    script.
+      function confirmarBorrado() {
+        const checkboxes = document.querySelectorAll('input[name="cursosSeleccionados"]:checked');
+        if (checkboxes.length === 0) {
+          alert('Por favor, selecciona al menos un curso para borrar.');
+          return false;
+        }
+        return confirm(`¿Seguro que quieres borrar ${checkboxes.length} curso(s)?`);
+      }
+
+      function cancelar() {
+        window.location.href = '/admin/menu'; // o a la página que quieras
+      }

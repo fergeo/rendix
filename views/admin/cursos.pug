@@ -1,0 +1,32 @@
+doctype html
+html
+    head
+        title Cursos
+        style.
+            body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+            }
+            h1 {
+                color: #333;
+            }
+            .button-container {
+                margin-top: 20px;
+            }
+            button {
+                margin: 5px;
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+            }
+    body
+        h1 Cursos
+            .button-container
+                form(action="/alta-curso" method="get")
+                    button(type="submit") Alta de Curso
+                form(action="/modificacion-curso" method="get")
+                    button(type="submit") Modificación de Curso
+                form(action="/borrado-curso" method="get")
+                    button(type="submit") Borrado de Curso
+                form(action="/volver" method="get")
+                    button(type="submit") Volver

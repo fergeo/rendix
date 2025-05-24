@@ -1,0 +1,42 @@
+doctype html
+html
+    head
+        meta(charset="UTF-8")
+        title Listar Cursos
+        style.
+            body {
+                font-family: Arial, sans-serif;
+                margin: 30px;
+            }
+            h1 {
+                color: #333;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 10px;
+                text-align: left;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+    body
+        h1 Listar Cursos
+
+        table
+            thead
+                tr
+                    th Nombre
+                    th Carrera
+                    th Día
+                    th Horario
+            tbody
+                each curso in cursos
+                    tr
+                        td #{curso.nombre}
+                        td #{curso.carrera}
+                        td #{curso.dia}
+                        td #{curso.horario}

@@ -1,0 +1,84 @@
+doctype html
+html
+    head
+        title Alta de Curso
+        style.
+            body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+            }
+            h1 {
+                color: #333;
+            }
+            form {
+                display: flex;
+                flex-direction: column;
+                max-width: 400px;
+            }
+            label {
+                margin-top: 10px;
+            }
+            input {
+                padding: 8px;
+                font-size: 16px;
+                margin-top: 5px;
+            }
+            .button-group {
+                margin-top: 20px;
+                display: flex;
+                gap: 10px;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+            }
+            table {
+                margin-top: 40px;
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid #ccc;
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+    body
+        h1 Alta de Curso
+
+        form(action="/alta-curso" method="post")
+            label(for="nombre") Nombre:
+            input(type="text" name="nombre" id="nombre" required)
+
+            label(for="carrera") Curso o Carrera:
+            input(type="text" name="carrera" id="carrera" required)
+
+            label(for="dia") Día:
+            input(type="text" name="dia" id="dia" required)
+
+            label(for="horario") Horario:
+            input(type="text" name="horario" id="horario" required)
+
+            .button-group
+                button(type="submit") Aceptar
+                button(type="button" onclick="window.location.href='/'") Cancelar
+
+        if cursos && cursos.length
+            h2 Cursos ingresados
+            table
+                thead
+                    tr
+                        th Nombre
+                        th Curso o Carrera
+                        th Día
+                        th Horario
+                tbody
+                    each curso in cursos
+                        tr
+                            td= curso.nombre
+                            td= curso.carrera
+                            td= curso.dia
+                            td= curso.horario

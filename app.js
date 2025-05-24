@@ -1,8 +1,11 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import authRoutes from './routes/authRoutes.js';
 import session from 'express-session';
+
+// Rutas y middlewares
+import authRoutes from './routes/authRoutes.js';
+import adminRoutes from './routes/admin.js';
 import { requireLogin } from './middlewares/authMiddleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,18 +21,30 @@ app.use(session({
     saveUninitialized: false
 }));
 
-// Configuración de Pug
+// Middleware para parsear formularios
+app.use(express.urlencoded({ extended: true }));
+
+// Motor de plantillas: Pug
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
-app.use(express.urlencoded({ extended: true }));
+// Archivos estáticos (opcional si tienes CSS, JS o imágenes)
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Rutas públicas
+// Rutas públicas (login, registro)
 app.use('/', authRoutes);
 
-// Ruta protegida para administrador
+// Rutas protegidas de administración
+app.use('/admin', requireLogin, adminRoutes);
+
+// Ruta directa al menú de administrador
 app.get('/admin/menu', requireLogin, (req, res) => {
     res.render('admin/menu', { usuario: req.session.usuario });
+});
+
+// Redirección desde raíz
+app.get('/', (req, res) => {
+    res.redirect('/login');
 });
 
 // Iniciar servidor

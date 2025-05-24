@@ -2,21 +2,76 @@ doctype html
 html
     head
         title Login
+        style.
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f7f7f7;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+            .login-container {
+                background: white;
+                padding: 30px 40px;
+                border-radius: 8px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                width: 320px;
+                text-align: center;
+            }
+            h1 {
+                margin-bottom: 20px;
+                color: #333;
+            }
+            form div {
+                margin-bottom: 15px;
+                text-align: left;
+            }
+            label {
+                display: block;
+                margin-bottom: 6px;
+                font-weight: bold;
+                color: #555;
+            }
+            input, select {
+                width: 100%;
+                padding: 8px 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+            button {
+                width: 100%;
+                padding: 10px 0;
+                background-color: #1976d2;
+                border: none;
+                border-radius: 4px;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            button:hover {
+                background-color: #0d47a1;
+            }
     body
-        h1 Bienvenido a Rendix
-        h1 Login
-    form(action="/login", method="POST")
-        div
-            label(for="usuario") Usuario:
-            input(type="text", name="usuario", id="usuario", required)
-        div
-            label(for="contrasena") Contraseña:
-            input(type="password", name="contrasena", id="contrasena", required)
-        div
-            label(for="rol") Rol:
-            select(name="rol", id="rol", required)
-                option(value="administrador") Administrador
-                option(value="alumno") Alumno
-                option(value="docente") Docente
-        div
-            button(type="submit") Iniciar sesión
+        .login-container
+            h1 Bienvenido a Rendix
+            h2 Login
+            form(action="/login" method="POST")
+                div
+                    label(for="usuario") Usuario:
+                    input(type="text" name="usuario" id="usuario" required)
+                div
+                    label(for="contrasena") Contraseña:
+                    input(type="password" name="contrasena" id="contrasena" required)
+                div
+                    label(for="rol") Rol:
+                    select(name="rol" id="rol" required)
+                        option(value="" disabled selected) -- Selecciona un rol --
+                        option(value="administrador") Administrador
+                        option(value="alumno") Alumno
+                        option(value="docente") Docente
+                div
+                    button(type="submit") Iniciar sesión
