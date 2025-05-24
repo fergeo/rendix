@@ -1,84 +1,108 @@
 doctype html
 html
-    head
-        title Alta de Curso
-        style.
-            body {
-                font-family: Arial, sans-serif;
-                padding: 20px;
-            }
-            h1 {
-                color: #333;
-            }
-            form {
-                display: flex;
-                flex-direction: column;
-                max-width: 400px;
-            }
-            label {
-                margin-top: 10px;
-            }
-            input {
-                padding: 8px;
-                font-size: 16px;
-                margin-top: 5px;
-            }
-            .button-group {
-                margin-top: 20px;
-                display: flex;
-                gap: 10px;
-            }
-            button {
-                padding: 10px 20px;
-                font-size: 16px;
-                cursor: pointer;
-            }
-            table {
-                margin-top: 40px;
-                width: 100%;
-                border-collapse: collapse;
-            }
-            th, td {
-                border: 1px solid #ccc;
-                padding: 8px;
-                text-align: left;
-            }
-            th {
-                background-color: #f2f2f2;
-            }
-    body
-        h1 Alta de Curso
+  head
+    title Alta de Curso
+    style.
+      body {
+          font-family: Arial, sans-serif;
+          padding: 20px;
+          text-align: center; /* Centrar todo por defecto */
+      }
+      h1 {
+          color: #333;
+          margin-bottom: 30px;
+      }
+      form {
+          display: flex;
+          flex-direction: column;
+          max-width: 400px;
+          margin: 0 auto; /* Centrar formulario */
+          text-align: left; /* Para que labels e inputs se alineen a la izquierda dentro del form */
+      }
+      label {
+          margin-top: 10px;
+          display: block;
+      }
+      input {
+          padding: 8px;
+          font-size: 16px;
+          margin-top: 5px;
+          width: 100%; /* Que inputs ocupen todo el ancho del form */
+          box-sizing: border-box;
+      }
+      .button-group {
+          margin-top: 20px;
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+      }
+      button {
+          padding: 10px 20px;
+          font-size: 16px;
+          cursor: pointer;
+          border: none;
+          border-radius: 4px;
+          color: white;
+          transition: background-color 0.3s ease;
+      }
+      button[type="submit"] {
+          background-color: #4CAF50; /* verde */
+      }
+      button[type="submit"]:hover {
+          background-color: #388E3C;
+      }
+      button[type="button"] {
+          background-color: #e53935; /* rojo */
+      }
+      button[type="button"]:hover {
+          background-color: #c62828;
+      }
+      table {
+          margin: 40px auto 0 auto; /* Centrar tabla y margen superior */
+          width: 80%;
+          border-collapse: collapse;
+          text-align: left;
+      }
+      th, td {
+          border: 1px solid #ccc;
+          padding: 8px;
+      }
+      th {
+          background-color: #f2f2f2;
+      }
+  body
+    h1 Alta de Curso
 
-        form(action="/alta-curso" method="post")
-            label(for="nombre") Nombre:
-            input(type="text" name="nombre" id="nombre" required)
+    form(action="/admin/cursos/alta" method="post")
+      label(for="nombre") Nombre:
+      input(type="text" name="nombre" id="nombre" required)
 
-            label(for="carrera") Curso o Carrera:
-            input(type="text" name="carrera" id="carrera" required)
+      label(for="carrera") Curso o Carrera:
+      input(type="text" name="carrera" id="carrera" required)
 
-            label(for="dia") Día:
-            input(type="text" name="dia" id="dia" required)
+      label(for="dia") Día:
+      input(type="text" name="dia" id="dia" required)
 
-            label(for="horario") Horario:
-            input(type="text" name="horario" id="horario" required)
+      label(for="horario") Horario:
+      input(type="text" name="horario" id="horario" required)
 
-            .button-group
-                button(type="submit") Aceptar
-                button(type="button" onclick="window.location.href='/'") Cancelar
+      .button-group
+        button(type="submit") Aceptar
+        button(type="button" onclick="window.location.href='/admin/cursos'") Volver
 
-        if cursos && cursos.length
-            h2 Cursos ingresados
-            table
-                thead
-                    tr
-                        th Nombre
-                        th Curso o Carrera
-                        th Día
-                        th Horario
-                tbody
-                    each curso in cursos
-                        tr
-                            td= curso.nombre
-                            td= curso.carrera
-                            td= curso.dia
-                            td= curso.horario
+    if cursos && cursos.length
+      h2 Cursos ingresados
+      table
+        thead
+          tr
+            th Nombre
+            th Curso o Carrera
+            th Día
+            th Horario
+        tbody
+          each curso in cursos
+            tr
+              td= curso.nombre
+              td= curso.carrera
+              td= curso.dia
+              td= curso.horario

@@ -22,18 +22,18 @@ router.get('/cursos', (req, res) => {
 });
 
 // Alta de curso
-router.get('/alta', mostrarAlta);
-router.post('/alta-curso', agregarCurso);
+router.get('/cursos/alta', mostrarAlta);
+router.post('/cursos/alta', agregarCurso);
 
 // Baja de curso
-router.get('/baja', mostrarBaja);
+router.get('/cursos/baja', mostrarBaja);
 router.post('/cursos/borrar', borrarCursos);
 
 // Modificación de curso
-router.get('/modificar', mostrarModificar);
+router.get('/cursos/modificar', mostrarModificar);
 router.post('/cursos/modificar', modificarCurso);
 
 // Consulta de cursos
-router.get('/consulta', listarCursos);
+router.get('/cursos/consulta', listarCursos);
 
 export default router;

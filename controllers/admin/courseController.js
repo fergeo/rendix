@@ -6,7 +6,7 @@ import { dirname } from 'path';
 // Para rutas correctas en ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const dataPath = resolve(__dirname, '../../model/admin/courseModel.json');
+const dataPath = resolve(__dirname, '../../models/admin/courseModel.json');
 
 async function readCursos() {
     try {
@@ -23,7 +23,7 @@ async function writeCursos(cursos) {
 
 export const mostrarAlta = async (req, res) => {
     const cursos = await readCursos();
-    res.render('altaCurso', { cursos });
+    res.render('admin/altaCurso', { cursos });
 };
 
 export const agregarCurso = async (req, res) => {
@@ -40,12 +40,12 @@ export const agregarCurso = async (req, res) => {
 
     cursos.push(nuevoCurso);
     await writeCursos(cursos);
-    res.redirect('/admin/alta');
+    res.redirect('/admin/cursos/alta');
 };
 
 export const mostrarBaja = async (req, res) => {
     const cursos = await readCursos();
-    res.render('bajaCurso', { cursos });
+    res.render('admin/bajaCurso', { cursos });
 };
 
 export const borrarCursos = async (req, res) => {
@@ -59,12 +59,12 @@ export const borrarCursos = async (req, res) => {
     }
 
     await writeCursos(cursos);
-    res.redirect('/admin/baja');
+    res.redirect('/admin/cursos/baja');
 };
 
 export const mostrarModificar = async (req, res) => {
     const cursos = await readCursos();
-    res.render('modificarCurso', { cursos });
+    res.render('admin/modificarCurso', { cursos });
 };
 
 export const modificarCurso = async (req, res) => {
@@ -76,10 +76,10 @@ export const modificarCurso = async (req, res) => {
     );
 
     await writeCursos(cursos);
-    res.redirect('/admin/modificar');
+    res.redirect('/admin/cursos/modificar');
 };
 
 export const listarCursos = async (req, res) => {
     const cursos = await readCursos();
-    res.render('consultarCurso', { cursos });
+    res.render('admin/consultarCurso', { cursos });
 };

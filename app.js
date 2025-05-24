@@ -42,6 +42,11 @@ app.get('/admin/menu', requireLogin, (req, res) => {
     res.render('admin/menu', { usuario: req.session.usuario });
 });
 
+// Redirigir /volver al menú administrador
+app.get('/volver', (req, res) => {
+    res.redirect('/admin/menu');
+});
+
 // Redirección desde raíz
 app.get('/', (req, res) => {
     res.redirect('/login');
