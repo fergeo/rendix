@@ -3,27 +3,27 @@ import { existsSync } from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
-// Rutas absolutas
-const studentsPath = path.resolve('models/admin/studentsModel.json');
-const coursesPath = path.resolve('models/admin/courseModel.json');
+// Rutas a los JSON
+const studentsPath     = path.resolve('models/admin/studentsModel.json');
+const coursesPath      = path.resolve('models/admin/courseModel.json');
 const inscriptionsPath = path.resolve('models/admin/inscriptionModel.json');
-const usersPath = path.resolve('models/admin/userModel.json');
+const usersPath        = path.resolve('models/admin/userModel.json');
 
-// Leer JSON con fallback a []
+// Lee o inicializa un JSON
 async function readJson(filePath) {
   try {
     if (!existsSync(filePath)) {
       await writeFile(filePath, '[]', 'utf-8');
     }
-    const data = await readFile(filePath, 'utf-8');
-    return data.trim() ? JSON.parse(data) : [];
+    const raw = await readFile(filePath, 'utf-8');
+    return raw.trim() ? JSON.parse(raw) : [];
   } catch (err) {
     console.error(`Error leyendo ${filePath}:`, err);
     return [];
   }
 }
 
-// Escribir JSON
+// Escribe un JSON
 async function writeJson(filePath, data) {
   try {
     await writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
@@ -32,63 +32,100 @@ async function writeJson(filePath, data) {
   }
 }
 
-// Obtener cursos
+// Devuelve lista de cursos
 export async function getCourses() {
   return await readJson(coursesPath);
 }
 
-// Obtener inscripciones
+// Devuelve lista cruda de inscripciones
 export async function getInscriptions() {
   return await readJson(inscriptionsPath);
 }
 
-// Crear nombre de usuario
-function generarUsuario(nombre, apellido) {
-  const n = nombre.toLowerCase().replace(/\s+/g, '').slice(0, 3);
-  const a = apellido.toLowerCase().replace(/\s+/g, '').slice(0, 3);
-  return n + a;
+// ------------------------------------------------------
+// Mezcla inscripciones con datos de estudiantes y cursos
+// ------------------------------------------------------
+export async function getInscripcionesWithDetails() {
+  const estudiantes   = await readJson(studentsPath);
+  const cursos        = await readJson(coursesPath);
+  const inscripciones = await readJson(inscriptionsPath);
+
+  return inscripciones.map(ins => {
+    const est = estudiantes.find(e => e.id === ins.studentId) || {};
+    const cur = cursos.find(c => c.id === ins.courseId) || {};
+    return {
+      id: ins.id,
+      studentId: ins.studentId,
+      courseId: ins.courseId,
+
+      // Datos del estudiante
+      nombre: est.nombre || '',
+      apellido: est.apellido || '',
+      dni: est.dni || '',
+      direccion: est.direccion || '',
+      correo: est.correoElectronico || '',
+      telefono: est.telefono || '',
+
+      // Datos del curso
+      nombreCurso: cur.nombre || '',
+      carreraCurso: cur.carrera || '',
+      dia: cur.dia || '',
+      horario: cur.horario || ''
+    };
+  });
 }
 
-// Agregar inscripción, estudiante y usuario
+// ------------------------------------------------------
+// Renderizar Alta Inscripción
+// ------------------------------------------------------
+export async function renderAltaInscripcion(req, res) {
+  try {
+    const cursos        = await getCourses();
+    const inscripciones = await getInscripcionesWithDetails();
+    res.render('admin/altaInscripcion', { cursos, inscripciones });
+  } catch (err) {
+    console.error('Error en renderAltaInscripcion:', err);
+    res.status(500).send('Error cargando alta de inscripciones');
+  }
+}
+
+// ------------------------------------------------------
+// Agregar Inscripción
+// ------------------------------------------------------
+function generarUsuario(nombre, apellido) {
+  return nombre.toLowerCase().slice(0,3) + apellido.toLowerCase().slice(0,3);
+}
+
 export async function addInscription(studentData, courseId) {
-  const requiredFields = ['nombre', 'apellido', 'dni', 'direccion', 'correoElectronico', 'telefono'];
-  for (const field of requiredFields) {
-    if (!studentData[field]) {
-      throw new Error(`Falta el campo requerido: ${field}`);
+  const required = ['nombre','apellido','dni','direccion','correoElectronico','telefono'];
+  for (const f of required) {
+    if (!studentData[f]) {
+      throw new Error(`Falta el campo requerido: ${f}`);
     }
   }
-
-  const students = await readJson(studentsPath);
-  const courses = await readJson(coursesPath);
+  const students     = await readJson(studentsPath);
+  const courses      = await readJson(coursesPath);
   const inscriptions = await readJson(inscriptionsPath);
-  const users = await readJson(usersPath);
+  const users        = await readJson(usersPath);
 
+  // Curso
   const curso = courses.find(c => c.id === courseId);
   if (!curso) throw new Error('Curso no encontrado');
 
+  // Estudiante / Usuario
   let student = students.find(s => s.dni === studentData.dni);
-
   let userId;
   if (!student) {
-    // Crear usuario
-    const usuario = generarUsuario(studentData.nombre, studentData.apellido);
-    let user = users.find(u => u.usuario === usuario);
-
+    const usuarioStr = generarUsuario(studentData.nombre, studentData.apellido);
+    let user = users.find(u => u.usuario === usuarioStr);
     if (!user) {
       userId = uuidv4();
-      user = {
-        id: userId,
-        usuario,
-        contrasena: studentData.dni,
-        rol: 'alumno'
-      };
+      user = { id: userId, usuario: usuarioStr, contrasena: studentData.dni, rol: 'alumno' };
       users.push(user);
       await writeJson(usersPath, users);
     } else {
       userId = user.id;
     }
-
-    // Crear estudiante
     const studentId = uuidv4();
     student = {
       id: studentId,
@@ -104,69 +141,89 @@ export async function addInscription(studentData, courseId) {
     await writeJson(studentsPath, students);
   }
 
-  // Crear inscripción
+  // Inscripción nueva
   const inscriptionId = uuidv4();
-  inscriptions.push({
-    id: inscriptionId,
-    studentId: student.id,
-    courseId: curso.id
-  });
+  inscriptions.push({ id: inscriptionId, studentId: student.id, courseId: curso.id });
   await writeJson(inscriptionsPath, inscriptions);
 
-  return { mensaje: 'Inscripción, estudiante y usuario creados o actualizados con éxito' };
+  return { mensaje: 'Inscripción creada con éxito' };
 }
 
-// Eliminar inscripciones
+// ------------------------------------------------------
+// Renderizar Consulta Inscripciones
+// ------------------------------------------------------
+export async function renderConsultaInscripciones(req, res) {
+  try {
+    const inscripciones = await getInscripcionesWithDetails();
+    res.render('admin/consultarInscripcion', { inscripciones });
+  } catch (err) {
+    console.error('Error en renderConsultaInscripciones:', err);
+    res.status(500).send('Error cargando consulta de inscripciones');
+  }
+}
+
+// ------------------------------------------------------
+// Renderizar Baja Inscripciones
+// ------------------------------------------------------
+export async function renderBajaInscripciones(req, res) {
+  try {
+    const inscripciones = await getInscripcionesWithDetails();
+    res.render('admin/bajaInscripcion', { inscripciones });
+  } catch (err) {
+    console.error('Error en renderBajaInscripciones:', err);
+    res.status(500).send('Error cargando baja de inscripciones');
+  }
+}
+
+// ------------------------------------------------------
+// Eliminar Inscripciones
+// ------------------------------------------------------
 export async function deleteInscriptions(ids) {
+  if (!Array.isArray(ids)) {
+    ids = [ids]; // asegurarse que sea array
+  }
+
+  // Normalizar IDs a string para evitar problemas
+  ids = ids.map(String);
+
   const inscriptions = await readJson(inscriptionsPath);
-  const filtered = inscriptions.filter(ins => !ids.includes(ins.id));
+  const filtered = inscriptions.filter(ins => !ids.includes(String(ins.id)));
+
   await writeJson(inscriptionsPath, filtered);
   return { mensaje: 'Inscripciones eliminadas con éxito' };
 }
 
-// Actualizar inscripción
-export async function updateInscription(id, updatedData) {
-  const inscriptions = await readJson(inscriptionsPath);
-  const idx = inscriptions.findIndex(ins => ins.id === id);
-  if (idx !== -1) {
-    inscriptions[idx] = { ...inscriptions[idx], ...updatedData };
-    await writeJson(inscriptionsPath, inscriptions);
-    return { mensaje: 'Inscripción actualizada con éxito' };
-  } else {
-    throw new Error('Inscripción no encontrada');
+// ------------------------------------------------------
+// Renderizar Modificar Inscripciones
+// ------------------------------------------------------
+export async function renderModificarInscripcion(req, res) {
+  try {
+    const inscripciones = await getInscripcionesWithDetails();
+    res.render('admin/modificarInscripcion', { inscripciones });
+  } catch (err) {
+    console.error('Error en renderModificarInscripcion:', err);
+    res.status(500).send('Error cargando modificación de inscripciones');
   }
 }
 
-// Vista alta inscripción actualizada
-export async function renderAltaInscripcion(req, res) {
-  try {
-    const cursos = await getCourses();
-    const inscripciones = await getInscriptions();
-    const estudiantes = await readJson(studentsPath);
+// ------------------------------------------------------
+// Procesar Modificación Inscripciones
+// ------------------------------------------------------
+export async function updateInscription(id, updatedData) {
+  const inscriptions = await readJson(inscriptionsPath);
+  const idx = inscriptions.findIndex(ins => ins.id === id);
+  if (idx === -1) throw new Error('Inscripción no encontrada');
 
-    // Asociar inscripciones con datos completos
-    const inscripcionesConDatos = inscripciones.map(ins => {
-      const estudiante = estudiantes.find(e => e.id === ins.studentId);
-      const curso = cursos.find(c => c.id === ins.courseId);
+  // Actualizar solo studentId y courseId si están presentes y son válidos
+  const newInscription = { ...inscriptions[idx] };
 
-      return {
-        id: ins.id,
-        nombreEstudiante: estudiante?.nombre || 'Desconocido',
-        apellidoEstudiante: estudiante?.apellido || 'Desconocido',
-        dniEstudiante: estudiante?.dni || 'Desconocido',
-        nombreCurso: curso?.nombre || 'Desconocido',
-        carreraCurso: curso?.carrera || 'Desconocido',
-        dia: curso?.dia || 'Desconocido',
-        horario: curso?.horario || 'Desconocido'
-      };
-    });
+  if (updatedData.studentId) newInscription.studentId = updatedData.studentId;
+  if (updatedData.courseId) newInscription.courseId = updatedData.courseId;
 
-    res.render('admin/altaInscripcion', {
-      cursos,
-      inscripciones: inscripcionesConDatos
-    });
-  } catch (error) {
-    console.error('Error en renderAltaInscripcion:', error);
-    res.status(500).send('Error cargando cursos e inscripciones');
-  }
+  // Podrías agregar otras propiedades si es necesario, pero en tu caso la inscripción solo tiene esos campos
+
+  inscriptions[idx] = newInscription;
+  await writeJson(inscriptionsPath, inscriptions);
+
+  return { mensaje: 'Inscripción actualizada con éxito' };
 }

@@ -3,9 +3,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import session from 'express-session';
 
-// Rutas y middlewares
+// Importar rutas y middleware
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/admin.js';
+import studentRoutes from './routes/students.js'; 
 import { requireLogin } from './middlewares/authMiddleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,33 +17,41 @@ const port = 3000;
 
 // Configuración de sesión
 app.use(session({
-    secret: 'clave-secreta-rendix',
-    resave: false,
-    saveUninitialized: false
+  secret: 'clave-secreta-rendix',
+  resave: false,
+  saveUninitialized: false
 }));
 
-// Middleware para parsear formularios
+// Middleware para analizar datos de formularios
 app.use(express.urlencoded({ extended: true }));
 
-// Motor de plantillas: Pug
+// Configuración del motor de plantillas
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
-// Aquí va express.static
+// Archivos estáticos (CSS, JS, imágenes, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Rutas públicas (login, registro)
+// Rutas públicas (login, registro, etc.)
 app.use('/', authRoutes);
 
-// Rutas protegidas de administración
+// Rutas protegidas del administrador
 app.use('/admin', requireLogin, adminRoutes);
 
+// Ruta protegida para el menú de admin
 app.get('/admin/menu', requireLogin, (req, res) => {
-    res.render('admin/menu', { usuario: req.session.usuario });
+  res.render('admin/menu', { usuario: req.session.usuario });
 });
 
-// Otras rutas y configuración...
+// Rutas protegidas para alumnos, con prefijo /student
+app.use('/student', requireLogin, studentRoutes);
 
+// Ruta por defecto (404)
+app.use((req, res) => {
+  res.status(404).send('Página no encontrada');
+});
+
+// Inicialización del servidor
 app.listen(port, () => {
-    console.log(`✅ Servidor activo: http://localhost:${port}/login`);
+  console.log(`✅ Servidor activo: http://localhost:${port}/login`);
 });

@@ -6,9 +6,15 @@
     "rol": "administrador"
   },
   {
-    "id": "16c0e497-8016-41b8-9d8e-14f37515565e",
+    "id": "07778ee2-681a-44e2-91c6-e279b3e5fbde",
     "usuario": "feresp",
     "contrasena": "26522177",
+    "rol": "alumno"
+  },
+  {
+    "id": "aefc2422-59fe-4a16-8b57-06c5b7486f36",
+    "usuario": "marmen",
+    "contrasena": "21446546",
     "rol": "alumno"
   }
 ]

@@ -1,63 +1,52 @@
 doctype html
 html
-    head
-        title Consultar Inscripciones
-        style.
-            body {
-                font-family: Arial, sans-serif;
-                text-align: center;
-                padding: 20px;
-            }
-            table {
-                margin: 20px auto;
-                border-collapse: collapse;
-                width: 90%;
-                max-width: 1000px;
-            }
-            th, td {
-                border: 1px solid #ccc;
-                padding: 10px;
-                text-align: center;
-            }
-            th {
-                background-color: #f0f0f0;
-            }
-            button {
-                padding: 10px 20px;
-                font-size: 14px;
-                background-color: #2196F3;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-            a {
-                text-decoration: none;
-            }
-    body
-        h1 Consultar Inscripciones
+  head
+    title Consultar Inscripciones
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      table {
+        margin-top: 30px;
+      }
+  body
+    .container
+      h1.text-center.mb-4 Consultar Inscripciones
 
-        table
-            thead
-                tr
-                    th Nombre
-                    th Apellido
-                    th DNI
-                    th Nombre Curso
-                    th Carrera o Curso
-                    th Día
-                    th Horario
-            tbody
-                each inscripcion in inscripciones
-                    tr
-                        td= inscripcion.nombre
-                        td= inscripcion.apellido
-                        td= inscripcion.dni
-                        td= inscripcion.nombreCurso
-                        td= inscripcion.carreraCurso
-                        td= inscripcion.dia
-                        td= inscripcion.horario
+      if inscripciones && inscripciones.length > 0
+        table.table.table-bordered.table-striped
+          thead.table-light
+            tr
+              th Nombre
+              th Apellido
+              th DNI
+              th Correo
+              th Teléfono
+              th Dirección
+              th Curso
+              th Carrera/Curso
+              th Día
+              th Horario
+          tbody
+            each inscripcion in inscripciones
+              tr
+                td= inscripcion.nombre
+                td= inscripcion.apellido
+                td= inscripcion.dni
+                td= inscripcion.correo
+                td= inscripcion.telefono
+                td= inscripcion.direccion
+                td= inscripcion.nombreCurso
+                td= inscripcion.carreraCurso
+                td= inscripcion.dia
+                td= inscripcion.horario
+      else
+        p.text-center.text-muted No hay inscripciones registradas.
 
-        div
-            a(href="/admin/inscripciones")
-                button(type="button") Volver
+      .text-center.mt-4
+        a(href="/admin/inscripciones")
+          button.btn.btn-primary(type="button") Volver

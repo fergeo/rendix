@@ -1,12 +1,22 @@
 [
   {
-    "id": "4b1601ff-c9a2-4292-9ff5-568b4c42161d",
-    "nombre": "fer",
+    "id": "f60066d3-09a2-48d5-a920-eda89555bf7f",
+    "nombre": "Fernando",
     "apellido": "Espindola",
     "dni": "26522177",
-    "direccion": "dsfgd",
+    "direccion": "fdsad",
     "correoElectronico": "fe@d.c",
     "telefono": "55464",
-    "idUsuario": "16c0e497-8016-41b8-9d8e-14f37515565e"
+    "idUsuario": "07778ee2-681a-44e2-91c6-e279b3e5fbde"
+  },
+  {
+    "id": "a582ab6d-1546-4cfd-9de6-a79fe54ada5d",
+    "nombre": "Marcos",
+    "apellido": "Mendieta",
+    "dni": "21446546",
+    "direccion": "asedfa",
+    "correoElectronico": "d@d.d",
+    "telefono": "74967496",
+    "idUsuario": "aefc2422-59fe-4a16-8b57-06c5b7486f36"
   }
 ]

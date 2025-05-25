@@ -38,6 +38,9 @@ export const loginHandler = async (req, res) =>  {
             case 'administrador':
                 res.redirect('/admin/menu');
                 break;
+            case 'alumno':
+                res.redirect('/student');
+                break;
             default:
                 res.status(403).send('❌ Rol no permitido');
         }

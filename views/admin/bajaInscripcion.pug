@@ -63,17 +63,17 @@ html
                     each inscripcion in inscripciones
                         tr
                             td
-                                input(type="checkbox" name="seleccionados" value=inscripcion.id)
-                                td= inscripcion.nombre
-                                td= inscripcion.apellido
-                                td= inscripcion.dni
-                                td= inscripcion.direccion
-                                td= inscripcion.correo
-                                td= inscripcion.telefono
-                                td= inscripcion.nombreCurso
-                                td= inscripcion.carreraCurso
-                                td= inscripcion.dia
-                                td= inscripcion.horario
+                                input(type="checkbox" name="seleccionados[]" value=inscripcion.id)
+                            td= inscripcion.nombre
+                            td= inscripcion.apellido
+                            td= inscripcion.dni
+                            td= inscripcion.direccion
+                            td= inscripcion.correo
+                            td= inscripcion.telefono
+                            td= inscripcion.nombreCurso
+                            td= inscripcion.carreraCurso
+                            td= inscripcion.dia
+                            td= inscripcion.horario
 
         div
             button(type="submit") Aceptar
