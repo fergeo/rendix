@@ -9,7 +9,7 @@ const coursesPath = path.resolve('models/admin/courseModel.json');
 const inscriptionsPath = path.resolve('models/admin/inscriptionModel.json');
 const usersPath = path.resolve('models/admin/userModel.json');
 
-// Función para leer JSON con creación del archivo si no existe o está vacío
+// Leer JSON con fallback a []
 async function readJson(filePath) {
   try {
     if (!existsSync(filePath)) {
@@ -23,7 +23,7 @@ async function readJson(filePath) {
   }
 }
 
-// Función para escribir JSON
+// Escribir JSON
 async function writeJson(filePath, data) {
   try {
     await writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
@@ -42,7 +42,7 @@ export async function getInscriptions() {
   return await readJson(inscriptionsPath);
 }
 
-// Función auxiliar para crear nombre de usuario
+// Crear nombre de usuario
 function generarUsuario(nombre, apellido) {
   const n = nombre.toLowerCase().replace(/\s+/g, '').slice(0, 3);
   const a = apellido.toLowerCase().replace(/\s+/g, '').slice(0, 3);
@@ -50,10 +50,7 @@ function generarUsuario(nombre, apellido) {
 }
 
 // Agregar inscripción, estudiante y usuario
-export async function addInscription(studentData, courseString) {
-  // studentData debe tener: nombre, apellido, dni, direccion, correoElectronico, telefono
-
-  // Validar que vienen los datos necesarios
+export async function addInscription(studentData, courseId) {
   const requiredFields = ['nombre', 'apellido', 'dni', 'direccion', 'correoElectronico', 'telefono'];
   for (const field of requiredFields) {
     if (!studentData[field]) {
@@ -61,33 +58,37 @@ export async function addInscription(studentData, courseString) {
     }
   }
 
-  const [nombreCurso, carrera, dia, horario] = courseString.split('|');
-
-  if ([nombreCurso, carrera, dia, horario].some(v => !v)) {
-    throw new Error(`Formato de curso inválido: '${courseString}'`);
-  }
-
-  // Leer datos actuales
   const students = await readJson(studentsPath);
   const courses = await readJson(coursesPath);
   const inscriptions = await readJson(inscriptionsPath);
   const users = await readJson(usersPath);
 
-  // Buscar curso
-  const normalize = str => str.trim().toLowerCase();
-  const curso = courses.find(c =>
-    normalize(c.nombre) === normalize(nombreCurso) &&
-    normalize(c.carrera) === normalize(carrera) &&
-    normalize(c.dia) === normalize(dia) &&
-    normalize(c.horario) === normalize(horario)
-  );
+  const curso = courses.find(c => c.id === courseId);
   if (!curso) throw new Error('Curso no encontrado');
 
-  // Buscar si ya existe estudiante por DNI
   let student = students.find(s => s.dni === studentData.dni);
 
-  // Si no existe estudiante, crear nuevo
+  let userId;
   if (!student) {
+    // Crear usuario
+    const usuario = generarUsuario(studentData.nombre, studentData.apellido);
+    let user = users.find(u => u.usuario === usuario);
+
+    if (!user) {
+      userId = uuidv4();
+      user = {
+        id: userId,
+        usuario,
+        contrasena: studentData.dni,
+        rol: 'alumno'
+      };
+      users.push(user);
+      await writeJson(usersPath, users);
+    } else {
+      userId = user.id;
+    }
+
+    // Crear estudiante
     const studentId = uuidv4();
     student = {
       id: studentId,
@@ -96,41 +97,20 @@ export async function addInscription(studentData, courseString) {
       dni: studentData.dni,
       direccion: studentData.direccion,
       correoElectronico: studentData.correoElectronico,
-      telefono: studentData.telefono
+      telefono: studentData.telefono,
+      idUsuario: userId
     };
     students.push(student);
     await writeJson(studentsPath, students);
   }
 
-  // Generar usuario para el alumno (3 letras nombre + 3 letras apellido)
-  const usuario = generarUsuario(student.nombre, student.apellido);
-
-  // Verificar si usuario existe en users.json
-  const userExists = users.find(u => u.usuario === usuario);
-
-  if (!userExists) {
-    const newUser = {
-      usuario,
-      contrasena: student.dni, // contraseña igual al DNI
-      rol: 'alumno'
-    };
-    users.push(newUser);
-    await writeJson(usersPath, users);
-  }
-
   // Crear inscripción
   const inscriptionId = uuidv4();
-
   inscriptions.push({
     id: inscriptionId,
     studentId: student.id,
-    courseId: curso.id,
-    nombreCurso,
-    carreraCurso: carrera,
-    dia,
-    horario
+    courseId: curso.id
   });
-
   await writeJson(inscriptionsPath, inscriptions);
 
   return { mensaje: 'Inscripción, estudiante y usuario creados o actualizados con éxito' };
@@ -157,12 +137,34 @@ export async function updateInscription(id, updatedData) {
   }
 }
 
-// Render formulario de alta inscripción (solo para vista)
+// Vista alta inscripción actualizada
 export async function renderAltaInscripcion(req, res) {
   try {
     const cursos = await getCourses();
     const inscripciones = await getInscriptions();
-    res.render('admin/altaInscripcion', { cursos, inscripciones });
+    const estudiantes = await readJson(studentsPath);
+
+    // Asociar inscripciones con datos completos
+    const inscripcionesConDatos = inscripciones.map(ins => {
+      const estudiante = estudiantes.find(e => e.id === ins.studentId);
+      const curso = cursos.find(c => c.id === ins.courseId);
+
+      return {
+        id: ins.id,
+        nombreEstudiante: estudiante?.nombre || 'Desconocido',
+        apellidoEstudiante: estudiante?.apellido || 'Desconocido',
+        dniEstudiante: estudiante?.dni || 'Desconocido',
+        nombreCurso: curso?.nombre || 'Desconocido',
+        carreraCurso: curso?.carrera || 'Desconocido',
+        dia: curso?.dia || 'Desconocido',
+        horario: curso?.horario || 'Desconocido'
+      };
+    });
+
+    res.render('admin/altaInscripcion', {
+      cursos,
+      inscripciones: inscripcionesConDatos
+    });
   } catch (error) {
     console.error('Error en renderAltaInscripcion:', error);
     res.status(500).send('Error cargando cursos e inscripciones');

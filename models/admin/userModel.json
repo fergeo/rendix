@@ -1,17 +1,14 @@
 [
-    {
-        "usuario": "admin",
-        "contrasena": "1234",
-        "rol": "administrador"
-    },
-    {
-        "usuario": "alumno1",
-        "contrasena": "abcd",
-        "rol": "alumno"
-    },
-    {
-        "usuario": "docente1",
-        "contrasena": "efgh",
-        "rol": "docente"
-    }
+  {
+    "id": "1",
+    "usuario": "admin",
+    "contrasena": "1234",
+    "rol": "administrador"
+  },
+  {
+    "id": "16c0e497-8016-41b8-9d8e-14f37515565e",
+    "usuario": "feresp",
+    "contrasena": "26522177",
+    "rol": "alumno"
+  }
 ]
