@@ -3,6 +3,7 @@ html
   head
     title Alta de Inscripciones
     meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
   body
     .container.mt-5
@@ -22,8 +23,8 @@ html
           input.form-control(type="text", name="dni", id="dni", required)
 
         .mb-3
-          label.form-label(for="correo") Correo Electrónico
-          input.form-control(type="email", name="correo", id="correo", required)
+          label.form-label(for="correoElectronico") Correo Electrónico
+          input.form-control(type="email", name="correoElectronico", id="correoElectronico", required)
 
         .mb-3
           label.form-label(for="telefono") Teléfono
@@ -39,11 +40,9 @@ html
           select.form-select(name="cursoSeleccionado", id="cursoSeleccionado", required)
             option(value="") -- Seleccione un curso --
             each curso in cursos
-              option(
-                value=`${curso.id}|${curso.nombre}|${curso.carrera}|${curso.dia}|${curso.horario}`
-              ) #{curso.nombre} - #{curso.carrera} - #{curso.dia} - #{curso.horario}
+              option(value=curso.id) #{curso.nombre} - #{curso.carrera} - #{curso.dia} - #{curso.horario}
 
-        // Campos auto completados desde el curso seleccionado
+        // Campos auto completados desde el curso seleccionado (solo lectura)
         .row
           .col-md-6.mb-3
             label.form-label(for="nombreCurso") Nombre Curso
@@ -87,9 +86,12 @@ html
                 td #{inscripcion.apellido}
                 td #{inscripcion.dni}
                 td #{inscripcion.nombreCurso}
-                td #{inscripcion.carrera}
+                td #{inscripcion.carreraCurso}
                 td #{inscripcion.dia}
                 td #{inscripcion.horario}
 
-    // Importar el JS externo para el autocompletado del select
+    // Pasar la variable cursos al JS para autocompletar campos
+    script.
+      const cursos = !{JSON.stringify(cursos)};
+    // Importar el JS externo para autocompletar campos al seleccionar curso
     script(src="/js/inscripcion.js")
