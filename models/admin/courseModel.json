@@ -5,5 +5,12 @@
     "carrera": "Curso",
     "dia": "Martes",
     "horario": "10hs"
+  },
+  {
+    "id": "1748183257128",
+    "nombre": "React Native",
+    "carrera": "Curso",
+    "dia": "Lunes",
+    "horario": "20hs"
   }
 ]

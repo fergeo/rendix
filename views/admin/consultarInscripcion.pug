@@ -1,0 +1,63 @@
+doctype html
+html
+    head
+        title Consultar Inscripciones
+        style.
+            body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 20px;
+            }
+            table {
+                margin: 20px auto;
+                border-collapse: collapse;
+                width: 90%;
+                max-width: 1000px;
+            }
+            th, td {
+                border: 1px solid #ccc;
+                padding: 10px;
+                text-align: center;
+            }
+            th {
+                background-color: #f0f0f0;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 14px;
+                background-color: #2196F3;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            a {
+                text-decoration: none;
+            }
+    body
+        h1 Consultar Inscripciones
+
+        table
+            thead
+                tr
+                    th Nombre
+                    th Apellido
+                    th DNI
+                    th Nombre Curso
+                    th Carrera o Curso
+                    th Día
+                    th Horario
+            tbody
+                each inscripcion in inscripciones
+                    tr
+                        td= inscripcion.nombre
+                        td= inscripcion.apellido
+                        td= inscripcion.dni
+                        td= inscripcion.nombreCurso
+                        td= inscripcion.carreraCurso
+                        td= inscripcion.dia
+                        td= inscripcion.horario
+
+        div
+            a(href="/admin/inscripciones")
+                button(type="button") Volver

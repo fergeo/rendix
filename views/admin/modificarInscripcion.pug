@@ -1,0 +1,142 @@
+doctype html
+html
+  head
+    title Modificar Inscripciones
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+      }
+      form, table {
+        margin: 0 auto;
+        width: 90%;
+        max-width: 1000px;
+      }
+      label {
+        display: inline-block;
+        width: 150px;
+        text-align: right;
+        margin-right: 10px;
+      }
+      input[type="text"],
+      input[type="email"] {
+        width: 250px;
+        padding: 5px;
+        margin-bottom: 10px;
+      }
+      div {
+        margin: 5px 0;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+      }
+      th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background-color: #f0f0f0;
+      }
+      button {
+        margin: 10px;
+        padding: 8px 16px;
+        font-size: 14px;
+        border: none;
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      button[type="button"] {
+        background-color: #f44336;
+      }
+      a button {
+        text-decoration: none;
+      }
+    script.
+      function soloUnCheckbox(clicked) {
+        let checkboxes = document.querySelectorAll('input[name="seleccion"]');
+        checkboxes.forEach(cb => {
+          if (cb !== clicked) cb.checked = false;
+        });
+      }
+  body
+    h1 Modificar Inscripciones
+
+    form(action="/modificarInscripcion" method="post")
+      div
+        label(for="nombre") Nombre:
+        input(type="text" name="nombre" id="nombre")
+      div
+        label(for="apellido") Apellido:
+        input(type="text" name="apellido" id="apellido")
+      div
+        label(for="dni") DNI:
+        input(type="text" name="dni" id="dni")
+      div
+        label(for="direccion") Dirección:
+        input(type="text" name="direccion" id="direccion")
+      div
+        label(for="correo") Correo Electrónico:
+        input(type="email" name="correo" id="correo")
+      div
+        label(for="telefono") Teléfono:
+        input(type="text" name="telefono" id="telefono")
+      div
+        label(for="nombreCurso") Nombre Curso:
+        input(type="text" name="nombreCurso" id="nombreCurso")
+      div
+        label(for="carreraCurso") Carrera o Curso:
+        input(type="text" name="carreraCurso" id="carreraCurso")
+      div
+        label(for="dia") Día:
+        input(type="text" name="dia" id="dia")
+      div
+        label(for="horario") Horario:
+        input(type="text" name="horario" id="horario")
+
+      div
+        button(type="submit") Aceptar
+        a(href="/admin/inscripciones")
+          button(type="button") Cancelar
+
+    hr
+
+    h2 Inscripciones Registradas
+
+    table
+      thead
+        tr
+          th Seleccionar
+          th Nombre
+          th Apellido
+          th DNI
+          th Dirección
+          th Correo
+          th Teléfono
+          th Curso
+          th Carrera/Curso
+          th Día
+          th Horario
+          th Acciones
+      tbody
+        each inscripcion in inscripciones
+          tr
+            td: input(type="checkbox" name="seleccion" onclick="soloUnCheckbox(this)")
+            td= inscripcion.nombre
+            td= inscripcion.apellido
+            td= inscripcion.dni
+            td= inscripcion.direccion
+            td= inscripcion.correo
+            td= inscripcion.telefono
+            td= inscripcion.nombreCurso
+            td= inscripcion.carreraCurso
+            td= inscripcion.dia
+            td= inscripcion.horario
+            td
+              form(action=`/modificarInscripcion/${inscripcion.id}` method="get")
+                button(type="submit") Modificar

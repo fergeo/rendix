@@ -40,7 +40,7 @@ html
             option(value="") -- Seleccione un curso --
             each curso in cursos
               option(
-                value=`${curso.nombre}|${curso.carrera}|${curso.dia}|${curso.horario}`
+                value=`${curso.id}|${curso.nombre}|${curso.carrera}|${curso.dia}|${curso.horario}`
               ) #{curso.nombre} - #{curso.carrera} - #{curso.dia} - #{curso.horario}
 
         // Campos auto completados desde el curso seleccionado
@@ -91,25 +91,5 @@ html
                 td #{inscripcion.dia}
                 td #{inscripcion.horario}
 
-    script.
-      const selectCurso = document.getElementById('cursoSeleccionado');
-      const nombreCurso = document.getElementById('nombreCurso');
-      const carrera = document.getElementById('carrera');
-      const dia = document.getElementById('dia');
-      const horario = document.getElementById('horario');
-
-      selectCurso.addEventListener('change', () => {
-        const value = selectCurso.value;
-        if (value) {
-          const [nombre, carr, d, h] = value.split('|');
-          nombreCurso.value = nombre;
-          carrera.value = carr;
-          dia.value = d;
-          horario.value = h;
-        } else {
-          nombreCurso.value = '';
-          carrera.value = '';
-          dia.value = '';
-          horario.value = '';
-        }
-      });
+    // Importar el JS externo para el autocompletado del select
+    script(src="/js/inscripcion.js")

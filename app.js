@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
-// Archivos estáticos (opcional si tienes CSS, JS o imágenes)
+// Aquí va express.static
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Rutas públicas (login, registro)
@@ -37,22 +37,12 @@ app.use('/', authRoutes);
 // Rutas protegidas de administración
 app.use('/admin', requireLogin, adminRoutes);
 
-// Ruta directa al menú de administrador
 app.get('/admin/menu', requireLogin, (req, res) => {
     res.render('admin/menu', { usuario: req.session.usuario });
 });
 
-// Redirigir /volver al menú administrador
-app.get('/volver', (req, res) => {
-    res.redirect('/admin/menu');
-});
+// Otras rutas y configuración...
 
-// Redirección desde raíz
-app.get('/', (req, res) => {
-    res.redirect('/login');
-});
-
-// Iniciar servidor
 app.listen(port, () => {
     console.log(`✅ Servidor activo: http://localhost:${port}/login`);
 });

@@ -9,7 +9,19 @@ import {
   listarCursos,
 } from '../controllers/admin/courseController.js';
 
+import {
+  getCourses,
+  getInscriptions,
+  addInscription,
+  deleteInscriptions,
+  updateInscription
+} from '../controllers/admin/inscriptionController.js';
+
+import { renderAltaInscripcion } from '../controllers/admin/inscriptionController.js';
+
 const router = Router();
+
+console.log('Cargando rutas admin.js');
 
 // Página principal del administrador
 router.get('/', (req, res) => {
@@ -44,9 +56,104 @@ router.get('/inscripciones', (req, res) => {
   res.render('admin/inscripciones'); // archivo views/admin/menuInscripciones.pug
 });
 
-router.get('/altaInscripcion', (req, res) => {
+router.get('/modificarInscripcion', (req, res) => {
+  const inscripciones = []; // Reemplaza con datos reales
+  res.render('admin/modificarInscripcion', { inscripciones });
+});
+
+
+
+
+router.get('/bajaInscripcion', (req, res) => {
   // Aquí deberías cargar los datos y renderizar la vista
+  res.render('admin/bajaInscripcion', { cursos: [], inscripciones: [] });
+});
+
+
+router.get('/consultarInscripcion', (req, res) => {
+  res.render('admin/consultarInscripcion', { cursos: [], inscripciones: [] });
+});
+
+/*
+router.get('/altaInscripcion', async (req, res) => {
+  const cursos = await getCourses();
+  const inscripciones = await getInscriptions();
+  res.render('admin/altaInscripcion', { cursos, inscripciones });
+});
+
+router.get('/altaInscripcion', renderAltaInscripcion);
+
+router.get('/altaInscripcion', (req, res) => {
   res.render('admin/altaInscripcion', { cursos: [], inscripciones: [] });
 });
+*/
+
+router.get('/altaInscripcion', async (req, res) => {
+  const cursos = await getCourses();
+  const inscripciones = await getInscriptions();
+  res.render('admin/altaInscripcion', { cursos, inscripciones });
+});
+
+router.post('/altaInscripcion', async (req, res) => {
+  const { cursoSeleccionado, ...studentData } = req.body;
+  await addInscription(studentData, cursoSeleccionado);
+  res.redirect('/admin/altaInscripcion');
+});
+
+
+
+router.get('/bajaInscripcion', async (req, res) => {
+  const inscripciones = await getInscriptions();
+  res.render('admin/bajaInscripcion', { inscripciones });
+});
+
+router.post('/bajaInscripcion', async (req, res) => {
+  const ids = Array.isArray(req.body.seleccionados)
+    ? req.body.seleccionados
+    : [req.body.seleccionados];
+  await deleteInscriptions(ids);
+  res.redirect('/admin/bajaInscripcion');
+});
+
+router.get('/consultarInscripcion', async (req, res) => {
+  const inscripciones = await getInscriptions();
+  res.render('admin/consultarInscripcion', { inscripciones });
+});
+
+router.get('/modificarInscripcion', async (req, res) => {
+  const inscripciones = await getInscriptions();
+  res.render('admin/modificarInscripcion', { inscripciones });
+});
+
+router.post('/modificarInscripcion', async (req, res) => {
+  const { id, ...updatedData } = req.body;
+  await updateInscription(id, updatedData);
+  res.redirect('/admin/modificarInscripcion');
+});
+
+
+router.use((req, res, next) => {
+  console.log(`Middleware admin: ${req.method} ${req.originalUrl}`);
+  next();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export default router;

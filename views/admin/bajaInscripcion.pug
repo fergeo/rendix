@@ -1,0 +1,81 @@
+doctype html
+html
+    head
+        title Baja de Inscripción
+        style.
+            body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 20px;
+            }
+            table {
+                margin: 20px auto;
+                border-collapse: collapse;
+                width: 90%;
+                max-width: 1000px;
+            }
+            th, td {
+                border: 1px solid #ccc;
+                padding: 8px;
+                text-align: center;
+            }
+            th {
+                background-color: #f0f0f0;
+            }
+            button {
+                padding: 10px 20px;
+                margin: 10px;
+                font-size: 14px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            button[type="submit"] {
+                background-color: #4CAF50;
+                color: white;
+            }
+            button[type="button"] {
+                background-color: #f44336;
+                color: white;
+            }
+            a button {
+                text-decoration: none;
+            }
+    body
+        h1 Baja de Inscripción
+
+        form(action="/bajaInscripcion" method="post")
+            table
+                thead
+                    tr
+                        th Seleccionar
+                        th Nombre
+                        th Apellido
+                        th DNI
+                        th Dirección
+                        th Correo
+                        th Teléfono
+                        th Curso
+                        th Carrera/Curso
+                        th Día
+                        th Horario
+                tbody
+                    each inscripcion in inscripciones
+                        tr
+                            td
+                                input(type="checkbox" name="seleccionados" value=inscripcion.id)
+                                td= inscripcion.nombre
+                                td= inscripcion.apellido
+                                td= inscripcion.dni
+                                td= inscripcion.direccion
+                                td= inscripcion.correo
+                                td= inscripcion.telefono
+                                td= inscripcion.nombreCurso
+                                td= inscripcion.carreraCurso
+                                td= inscripcion.dia
+                                td= inscripcion.horario
+
+        div
+            button(type="submit") Aceptar
+            a(href="/admin/inscripciones")
+                button(type="button") Cancelar

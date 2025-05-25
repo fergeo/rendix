@@ -20,7 +20,8 @@
   "dependencies": {
     "express": "^5.1.0",
     "express-session": "^1.18.1",
-    "pug": "^3.0.3"
+    "pug": "^3.0.3",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
