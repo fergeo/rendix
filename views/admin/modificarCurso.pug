@@ -7,9 +7,13 @@ html
       body {
         font-family: Arial, sans-serif;
         margin: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centra horizontalmente todo */
       }
       h1 {
         color: #333;
+        text-align: center; /* Centra el título */
       }
       form {
         margin-bottom: 30px;
@@ -17,22 +21,32 @@ html
         border: 1px solid #ccc;
         border-radius: 5px;
         max-width: 500px;
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centra elementos dentro del formulario */
       }
       label {
         display: block;
         margin-top: 10px;
         font-weight: bold;
+        text-align: center; /* Centrar texto etiquetas */
+        width: 100%;
       }
       input[type="text"], select {
         width: 100%;
         padding: 8px;
         margin-top: 5px;
         box-sizing: border-box;
+        text-align: center; /* Centrar texto dentro de inputs */
       }
       .botones {
         margin-top: 20px;
         display: flex;
         gap: 15px;
+        justify-content: center; /* Centrar botones */
+        width: 100%;
       }
       button {
         padding: 10px 20px;
@@ -49,8 +63,9 @@ html
         background-color: #e53935;
       }
       table {
-        width: 100%;
+        width: 80%;
         border-collapse: collapse;
+        margin: 0 auto 30px auto; /* Centra tabla y margen abajo */
       }
       th, td {
         border: 1px solid #ddd;
@@ -91,7 +106,7 @@ html
 
       .botones
         button.aceptar(type="submit") Aceptar
-        button.cancelar(type="button" onclick="resetForm()") Cancelar
+        button.cancelar(type="button" onclick="window.location.href='/admin/cursos'") Cancelar
 
     h2 Cursos disponibles
 
@@ -105,7 +120,6 @@ html
           th Horario
           th Acción
       tbody
-        //- Aquí se debe iterar la lista de cursos, por ejemplo con pug:
         each curso in cursos
           tr
             td
@@ -124,12 +138,4 @@ html
         document.getElementById('carrera').value = carrera;
         document.getElementById('dia').value = dia;
         document.getElementById('horario').value = horario;
-      }
-
-      function resetForm() {
-        document.getElementById('modificarCursoForm').reset();
-        document.getElementById('cursoId').value = '';
-        // también deselecciona radios
-        const radios = document.getElementsByName('seleccionarCurso');
-        radios.forEach(r => r.checked = false);
       }

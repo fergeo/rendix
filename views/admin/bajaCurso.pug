@@ -7,9 +7,19 @@ html
       body {
         font-family: Arial, sans-serif;
         margin: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
       h1 {
         color: #333;
+        text-align: center;
+      }
+      form {
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
       table {
         width: 100%;
@@ -24,6 +34,11 @@ html
       th {
         background-color: #f2f2f2;
       }
+      .botones {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
       button {
         padding: 10px 20px;
         font-size: 16px;
@@ -31,7 +46,6 @@ html
         border-radius: 5px;
         border: none;
         color: white;
-        margin-right: 10px;
       }
       button.borrar {
         background-color: #e53935;
@@ -61,8 +75,9 @@ html
               td #{curso.dia}
               td #{curso.horario}
 
-      button.borrar(type="submit" onclick="return confirmarBorrado()") Borrar
-      button.cancelar(type="button" onclick="cancelar()") Cancelar
+      .botones
+        button.borrar(type="submit" onclick="return confirmarBorrado()") Borrar
+        button.cancelar(type="button" onclick="cancelar()") Cancelar
 
     script.
       function confirmarBorrado() {
@@ -75,5 +90,5 @@ html
       }
 
       function cancelar() {
-        window.location.href = '/admin/menu'; // o a la página que quieras
+        window.location.href = '/admin/cursos'; // Asegúrate que esta ruta redirige a cursos.pug
       }

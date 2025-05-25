@@ -1,0 +1,115 @@
+doctype html
+html
+  head
+    title Alta de Inscripciones
+    meta(charset="UTF-8")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+  body
+    .container.mt-5
+      h1 Alta de Inscripciones
+
+      form(method="POST", action="/admin/altaInscripcion")
+        .mb-3
+          label.form-label(for="nombre") Nombre
+          input.form-control(type="text", name="nombre", id="nombre", required)
+
+        .mb-3
+          label.form-label(for="apellido") Apellido
+          input.form-control(type="text", name="apellido", id="apellido", required)
+
+        .mb-3
+          label.form-label(for="dni") DNI
+          input.form-control(type="text", name="dni", id="dni", required)
+
+        .mb-3
+          label.form-label(for="correo") Correo Electrónico
+          input.form-control(type="email", name="correo", id="correo", required)
+
+        .mb-3
+          label.form-label(for="telefono") Teléfono
+          input.form-control(type="tel", name="telefono", id="telefono", required)
+
+        .mb-3
+          label.form-label(for="direccion") Dirección
+          input.form-control(type="text", name="direccion", id="direccion", required)
+
+        // Dropdown para seleccionar curso
+        .mb-3
+          label.form-label(for="cursoSeleccionado") Seleccionar Curso
+          select.form-select(name="cursoSeleccionado", id="cursoSeleccionado", required)
+            option(value="") -- Seleccione un curso --
+            each curso in cursos
+              option(
+                value=`${curso.nombre}|${curso.carrera}|${curso.dia}|${curso.horario}`
+              ) #{curso.nombre} - #{curso.carrera} - #{curso.dia} - #{curso.horario}
+
+        // Campos auto completados desde el curso seleccionado
+        .row
+          .col-md-6.mb-3
+            label.form-label(for="nombreCurso") Nombre Curso
+            input.form-control(type="text", id="nombreCurso", name="nombreCurso", readonly)
+
+          .col-md-6.mb-3
+            label.form-label(for="carrera") Carrera o Curso
+            input.form-control(type="text", id="carrera", name="carrera", readonly)
+
+        .row
+          .col-md-6.mb-3
+            label.form-label(for="dia") Día
+            input.form-control(type="text", id="dia", name="dia", readonly)
+
+          .col-md-6.mb-3
+            label.form-label(for="horario") Horario
+            input.form-control(type="text", id="horario", name="horario", readonly)
+
+        .d-flex.justify-content-between
+          button.btn.btn-success(type="submit") Aceptar
+          a.btn.btn-secondary(href="/admin/inscripciones") Cancelar
+
+      hr
+
+      if inscripciones && inscripciones.length > 0
+        h2.mt-5 Inscripciones Registradas
+        table.table.table-striped
+          thead
+            tr
+              th Nombre
+              th Apellido
+              th DNI
+              th Nombre Curso
+              th Carrera o Curso
+              th Día
+              th Horario
+          tbody
+            each inscripcion in inscripciones
+              tr
+                td #{inscripcion.nombre}
+                td #{inscripcion.apellido}
+                td #{inscripcion.dni}
+                td #{inscripcion.nombreCurso}
+                td #{inscripcion.carrera}
+                td #{inscripcion.dia}
+                td #{inscripcion.horario}
+
+    script.
+      const selectCurso = document.getElementById('cursoSeleccionado');
+      const nombreCurso = document.getElementById('nombreCurso');
+      const carrera = document.getElementById('carrera');
+      const dia = document.getElementById('dia');
+      const horario = document.getElementById('horario');
+
+      selectCurso.addEventListener('change', () => {
+        const value = selectCurso.value;
+        if (value) {
+          const [nombre, carr, d, h] = value.split('|');
+          nombreCurso.value = nombre;
+          carrera.value = carr;
+          dia.value = d;
+          horario.value = h;
+        } else {
+          nombreCurso.value = '';
+          carrera.value = '';
+          dia.value = '';
+          horario.value = '';
+        }
+      });
