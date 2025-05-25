@@ -1,4 +1,5 @@
 import { Router } from 'express';
+
 import {
   mostrarAlta,
   agregarCurso,
@@ -6,7 +7,7 @@ import {
   borrarCursos,
   mostrarModificar,
   modificarCurso,
-  listarCursos,
+  listarCursos
 } from '../controllers/admin/courseController.js';
 
 import {
@@ -14,12 +15,17 @@ import {
   getInscriptions,
   addInscription,
   deleteInscriptions,
-  updateInscription
+  updateInscription,
+  renderAltaInscripcion
 } from '../controllers/admin/inscriptionController.js';
 
-import { renderAltaInscripcion } from '../controllers/admin/inscriptionController.js';
-
 const router = Router();
+
+// Middleware de logging
+router.use((req, res, next) => {
+  console.log(`Middleware admin: ${req.method} ${req.originalUrl}`);
+  next();
+});
 
 console.log('Cargando rutas admin.js');
 
@@ -29,8 +35,9 @@ router.get('/', (req, res) => {
 });
 
 
-//CURSOS
-// Submenú o índice de gestión de cursos
+// ================= CURSOS =================
+
+// Menú de gestión de cursos
 router.get('/cursos', (req, res) => {
   res.render('admin/cursos');
 });
@@ -51,109 +58,87 @@ router.post('/cursos/modificar', modificarCurso);
 router.get('/cursos/consulta', listarCursos);
 
 
-//INSCRIPCIONES
+// ================= INSCRIPCIONES =================
+
+// Menú de inscripciones
 router.get('/inscripciones', (req, res) => {
-  res.render('admin/inscripciones'); // archivo views/admin/menuInscripciones.pug
+  res.render('admin/inscripciones'); // views/admin/inscripciones.pug
 });
 
-router.get('/modificarInscripcion', (req, res) => {
-  const inscripciones = []; // Reemplaza con datos reales
-  res.render('admin/modificarInscripcion', { inscripciones });
-});
-
-
-
-
-router.get('/bajaInscripcion', (req, res) => {
-  // Aquí deberías cargar los datos y renderizar la vista
-  res.render('admin/bajaInscripcion', { cursos: [], inscripciones: [] });
-});
-
-
-router.get('/consultarInscripcion', (req, res) => {
-  res.render('admin/consultarInscripcion', { cursos: [], inscripciones: [] });
-});
-
-/*
-router.get('/altaInscripcion', async (req, res) => {
-  const cursos = await getCourses();
-  const inscripciones = await getInscriptions();
-  res.render('admin/altaInscripcion', { cursos, inscripciones });
-});
-
+// Alta de inscripción (vista + acción)
 router.get('/altaInscripcion', renderAltaInscripcion);
 
-router.get('/altaInscripcion', (req, res) => {
-  res.render('admin/altaInscripcion', { cursos: [], inscripciones: [] });
-});
-*/
-
-router.get('/altaInscripcion', async (req, res) => {
-  const cursos = await getCourses();
-  const inscripciones = await getInscriptions();
-  res.render('admin/altaInscripcion', { cursos, inscripciones });
-});
-
 router.post('/altaInscripcion', async (req, res) => {
-  const { cursoSeleccionado, ...studentData } = req.body;
-  await addInscription(studentData, cursoSeleccionado);
-  res.redirect('/admin/altaInscripcion');
+  try {
+    const { cursoSeleccionado, ...studentData } = req.body;
+    await addInscription(studentData, cursoSeleccionado);
+    res.redirect('/admin/altaInscripcion');
+  } catch (err) {
+    console.error('Error en altaInscripcion POST:', err);
+    res.status(500).send('Error al agregar inscripción');
+  }
 });
 
+// Endpoint de API para pruebas (Thunder Client)
+router.post('/inscripciones', async (req, res) => {
+  try {
+    const mensaje = await addInscription(req.body, req.body.course);
+    res.status(201).json(mensaje);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
 
-
+// Baja de inscripción
 router.get('/bajaInscripcion', async (req, res) => {
-  const inscripciones = await getInscriptions();
-  res.render('admin/bajaInscripcion', { inscripciones });
+  try {
+    const inscripciones = await getInscriptions();
+    res.render('admin/bajaInscripcion', { inscripciones });
+  } catch (err) {
+    res.status(500).send('Error cargando inscripciones');
+  }
 });
 
 router.post('/bajaInscripcion', async (req, res) => {
-  const ids = Array.isArray(req.body.seleccionados)
-    ? req.body.seleccionados
-    : [req.body.seleccionados];
-  await deleteInscriptions(ids);
-  res.redirect('/admin/bajaInscripcion');
+  try {
+    const ids = Array.isArray(req.body.seleccionados)
+      ? req.body.seleccionados
+      : [req.body.seleccionados];
+    await deleteInscriptions(ids);
+    res.redirect('/admin/bajaInscripcion');
+  } catch (err) {
+    res.status(500).send('Error al eliminar inscripciones');
+  }
 });
 
+// Consulta de inscripciones
 router.get('/consultarInscripcion', async (req, res) => {
-  const inscripciones = await getInscriptions();
-  res.render('admin/consultarInscripcion', { inscripciones });
+  try {
+    const inscripciones = await getInscriptions();
+    res.render('admin/consultarInscripcion', { inscripciones });
+  } catch (err) {
+    res.status(500).send('Error al consultar inscripciones');
+  }
 });
 
+// Modificación de inscripciones
 router.get('/modificarInscripcion', async (req, res) => {
-  const inscripciones = await getInscriptions();
-  res.render('admin/modificarInscripcion', { inscripciones });
+  try {
+    const inscripciones = await getInscriptions();
+    res.render('admin/modificarInscripcion', { inscripciones });
+  } catch (err) {
+    res.status(500).send('Error al cargar inscripciones');
+  }
 });
 
 router.post('/modificarInscripcion', async (req, res) => {
-  const { id, ...updatedData } = req.body;
-  await updateInscription(id, updatedData);
-  res.redirect('/admin/modificarInscripcion');
+  try {
+    const { id, ...updatedData } = req.body;
+    await updateInscription(id, updatedData);
+    res.redirect('/admin/modificarInscripcion');
+  } catch (err) {
+    res.status(500).send('Error al modificar inscripción');
+  }
 });
-
-
-router.use((req, res, next) => {
-  console.log(`Middleware admin: ${req.method} ${req.originalUrl}`);
-  next();
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export default router;
