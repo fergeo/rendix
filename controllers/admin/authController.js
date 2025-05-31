@@ -2,16 +2,14 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-export const loginHandler = async (req, res) =>  {
-    const { usuario, contrasena, rol } = req.body;
+export const loginHandler = async (req, res) => {
+    const { usuario, contrasena } = req.body;
 
     // __dirname equivalente en ES Modules
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
 
     const rutaUsuarios = path.join(__dirname, '..', '..', 'models', 'admin', 'userModel.json');
-
-    console.log(rutaUsuarios);
 
     let usuariosData = [];
 
@@ -23,28 +21,27 @@ export const loginHandler = async (req, res) =>  {
         return res.status(500).send('❌ Error interno del servidor');
     }
 
+    // Buscar usuario válido por nombre y contraseña
     const usuarioValido = usuariosData.find(u =>
         u.usuario === usuario &&
-        u.contrasena === contrasena &&
-        u.rol === rol
+        u.contrasena === contrasena
     );
 
     if (usuarioValido) {
+        // Guardar en sesión
         req.session.usuario = usuarioValido.usuario;
         req.session.rol = usuarioValido.rol;
 
-        // Redirigir según el rol
+        // Redirigir según el rol que ya se recuperó del JSON
         switch (usuarioValido.rol) {
             case 'administrador':
-                res.redirect('/admin/menu');
-                break;
+                return res.redirect('/admin/menu');
             case 'alumno':
-                res.redirect('/student');
-                break;
+                return res.redirect('/student');
             default:
-                res.status(403).send('❌ Rol no permitido');
+                return res.status(403).send('❌ Rol no permitido');
         }
     } else {
-        res.status(401).send('❌ Usuario, contraseña o rol incorrectos');
+        return res.status(401).send('❌ Usuario o contraseña incorrectos');
     }
 };

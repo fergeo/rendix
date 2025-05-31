@@ -2,11 +2,12 @@ import { readFile, writeFile } from 'fs/promises';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-// Para rutas correctas en ESM
+// Configurar ruta al archivo JSON
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const dataPath = resolve(__dirname, '../../models/admin/courseModel.json');
 
+// Leer cursos desde JSON
 async function readCursos() {
     try {
         const data = await readFile(dataPath, 'utf-8');
@@ -16,22 +17,22 @@ async function readCursos() {
     }
 }
 
+// Escribir cursos al JSON
 async function writeCursos(cursos) {
     await writeFile(dataPath, JSON.stringify(cursos, null, 2));
 }
 
-// Mostrar formulario de alta con cursos ya existentes
+// Mostrar formulario de alta
 export const mostrarAlta = async (req, res) => {
     const cursos = await readCursos();
     res.render('admin/altaCurso', { cursos });
 };
 
-// Agregar un nuevo curso (desde formulario o API)
+// Agregar un nuevo curso
 export const agregarCurso = async (req, res) => {
     const cursos = await readCursos();
     const { nombre, carrera, dia, horario } = req.body;
 
-    // Validación básica
     if (!nombre || !carrera || !dia || !horario) {
         const mensaje = 'Faltan campos obligatorios';
         if (req.headers.accept?.includes('application/json')) {
@@ -41,43 +42,23 @@ export const agregarCurso = async (req, res) => {
         }
     }
 
-    // Verifica si ya existe un curso igual (opcional)
-    const existe = cursos.some(c =>
-        c.nombre === nombre &&
-        c.carrera === carrera &&
-        c.dia === dia &&
-        c.horario === horario
-    );
-
-    if (existe) {
-        const mensaje = 'El curso ya existe';
-        if (req.headers.accept?.includes('application/json')) {
-            return res.status(409).json({ error: mensaje });
-        } else {
-            return res.status(409).send(mensaje);
-        }
-    }
-
     const nuevoCurso = {
         id: Date.now().toString(),
         nombre,
         carrera,
         dia,
-        horario,
+        horario
     };
 
     cursos.push(nuevoCurso);
     await writeCursos(cursos);
 
-    // Si es desde un cliente de API como Thunder Client
     if (req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json') {
         return res.status(201).json({ mensaje: '✅ Curso agregado correctamente', curso: nuevoCurso });
+    } else {
+        return res.redirect('/admin/cursos/alta');
     }
-
-    // Si es desde navegador (formulario HTML)
-    return res.redirect('/admin/cursos/alta');
 };
-
 
 // Mostrar formulario de baja
 export const mostrarBaja = async (req, res) => {
@@ -85,31 +66,34 @@ export const mostrarBaja = async (req, res) => {
     res.render('admin/bajaCurso', { cursos });
 };
 
-// Eliminar cursos (desde formulario o API)
+// Borrar cursos
 export const borrarCursos = async (req, res) => {
     let cursos = await readCursos();
     const cursosSeleccionados = req.body.cursosSeleccionados;
 
-    if (!cursosSeleccionados) {
-        if (req.accepts('html')) {
-            return res.redirect('/admin/cursos/baja');
+    if (!cursosSeleccionados || cursosSeleccionados.length === 0) {
+        const mensaje = 'No se especificaron cursos para eliminar';
+        if (req.headers.accept?.includes('application/json')) {
+            return res.status(400).json({ error: mensaje });
         } else {
-            return res.status(400).json({ error: 'No se especificaron cursos para eliminar' });
+            return res.status(400).send(mensaje);
         }
     }
 
-    if (Array.isArray(cursosSeleccionados)) {
-        cursos = cursos.filter(c => !cursosSeleccionados.includes(c.id));
-    } else {
-        cursos = cursos.filter(c => c.id !== cursosSeleccionados);
-    }
+    const idsAEliminar = Array.isArray(cursosSeleccionados)
+        ? cursosSeleccionados
+        : [cursosSeleccionados];
+
+    const cursosAntes = cursos.length;
+    cursos = cursos.filter(c => !idsAEliminar.includes(c.id));
+    const eliminados = cursosAntes - cursos.length;
 
     await writeCursos(cursos);
 
-    if (req.accepts('html')) {
-        return res.redirect('/admin/cursos/baja');
+    if (req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json') {
+        return res.status(200).json({ mensaje: `🗑️ Se eliminaron ${eliminados} curso(s)` });
     } else {
-        return res.status(200).json({ mensaje: 'Cursos eliminados correctamente' });
+        return res.redirect('/admin/cursos/baja');
     }
 };
 
@@ -119,20 +103,22 @@ export const mostrarModificar = async (req, res) => {
     res.render('admin/modificarCurso', { cursos });
 };
 
-// Modificar curso (desde formulario o API)
+// Modificar curso existente
 export const modificarCurso = async (req, res) => {
     const { cursoId, nombre, carrera, dia, horario } = req.body;
     let cursos = await readCursos();
 
     if (!cursoId || !nombre || !carrera || !dia || !horario) {
-        if (req.accepts('html')) {
-            return res.status(400).send('Todos los campos son obligatorios');
+        const mensaje = 'Faltan campos obligatorios para modificar el curso';
+        if (req.headers.accept?.includes('application/json')) {
+            return res.status(400).json({ error: mensaje });
         } else {
-            return res.status(400).json({ error: 'Faltan campos obligatorios' });
+            return res.status(400).send(mensaje);
         }
     }
 
     let cursoModificado = null;
+
     cursos = cursos.map(c => {
         if (c.id === cursoId) {
             cursoModificado = { ...c, nombre, carrera, dia, horario };
@@ -147,20 +133,20 @@ export const modificarCurso = async (req, res) => {
 
     await writeCursos(cursos);
 
-    if (req.accepts('html')) {
-        return res.redirect('/admin/cursos/modificar');
+    if (req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json') {
+        return res.status(200).json({ mensaje: '✏️ Curso modificado correctamente', curso: cursoModificado });
     } else {
-        return res.status(200).json({ mensaje: 'Curso modificado correctamente', curso: cursoModificado });
+        return res.redirect('/admin/cursos/modificar');
     }
 };
 
-// Consultar cursos (HTML o API)
+// Consultar todos los cursos
 export const listarCursos = async (req, res) => {
     const cursos = await readCursos();
 
-    if (req.accepts('html')) {
-        return res.render('admin/consultarCurso', { cursos });
-    } else {
+    if (req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json') {
         return res.status(200).json(cursos);
+    } else {
+        return res.render('admin/consultarCurso', { cursos });
     }
 };

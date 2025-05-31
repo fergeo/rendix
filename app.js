@@ -50,7 +50,8 @@ app.get('/admin/menu', requireLogin, (req, res) => {
 });
 
 // Rutas protegidas para alumnos, con prefijo /student
-app.use('/student', requireLogin, studentRoutes);
+//app.use('/student', requireLogin, studentRoutes);
+app.use('/student', studentRoutes);
 
 // Ruta por defecto (404)
 app.use((req, res) => {

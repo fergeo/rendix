@@ -1,12 +1,5 @@
 [
   {
-    "id": "1748123719033",
-    "nombre": "NodeJs",
-    "carrera": "Curso",
-    "dia": "Martes",
-    "horario": "10hs"
-  },
-  {
     "id": "1748718357592",
     "nombre": "Figma",
     "carrera": "Ciurso",
@@ -15,9 +8,16 @@
   },
   {
     "id": "1748720458693",
-    "nombre": "NodeJs",
+    "nombre": "AWS Fundation",
     "carrera": "Curso",
     "dia": "Martes",
     "horario": "10hs"
+  },
+  {
+    "id": "1748721091497",
+    "nombre": "JAVA",
+    "carrera": "Curso",
+    "dia": "20hs",
+    "horario": "Miercoles"
   }
 ]

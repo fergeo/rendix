@@ -23,7 +23,7 @@ html
             h1 {
                 margin-bottom: 20px;
                 color: #333;
-            }
+            } 
             form div {
                 margin-bottom: 15px;
                 text-align: left;
@@ -34,7 +34,7 @@ html
                 font-weight: bold;
                 color: #555;
             }
-            input, select {
+            input {
                 width: 100%;
                 padding: 8px 10px;
                 border: 1px solid #ccc;
@@ -55,23 +55,16 @@ html
             button:hover {
                 background-color: #0d47a1;
             }
-    body
-        .login-container
-            h1 Bienvenido a Rendix
-            h2 Login
-            form(action="/login" method="POST")
-                div
-                    label(for="usuario") Usuario:
-                    input(type="text" name="usuario" id="usuario" required)
-                div
-                    label(for="contrasena") Contraseña:
-                    input(type="password" name="contrasena" id="contrasena" required)
-                div
-                    label(for="rol") Rol:
-                    select(name="rol" id="rol" required)
-                        option(value="" disabled selected) -- Selecciona un rol --
-                        option(value="administrador") Administrador
-                        option(value="alumno") Alumno
-                        option(value="docente") Docente
-                div
-                    button(type="submit") Iniciar sesión
+        body
+            .login-container
+                h1 Bienvenido a Rendix
+                h2 Login
+                form(action="/login" method="POST")
+                    div
+                        label(for="usuario") Usuario:
+                        input(type="text" name="usuario" id="usuario" required)
+                    div
+                        label(for="contrasena") Contraseña:
+                        input(type="password" name="contrasena" id="contrasena" required)
+                    div
+                        button(type="submit") Iniciar sesión

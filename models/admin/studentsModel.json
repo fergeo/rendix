@@ -18,5 +18,15 @@
     "correoElectronico": "d@d.d",
     "telefono": "74967496",
     "idUsuario": "aefc2422-59fe-4a16-8b57-06c5b7486f36"
+  },
+  {
+    "id": "d8e5c317-a13a-4742-a7a6-c040b0bc941d",
+    "nombre": "Gaston",
+    "apellido": "Omastott",
+    "dni": "28522177",
+    "direccion": "dsagfsd",
+    "correoElectronico": "f@f.f",
+    "telefono": "449494",
+    "idUsuario": "beb966da-dda0-42a9-bf97-0eec0cf0f1fd"
   }
 ]

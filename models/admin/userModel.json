@@ -16,5 +16,11 @@
     "usuario": "marmen",
     "contrasena": "21446546",
     "rol": "alumno"
+  },
+  {
+    "id": "beb966da-dda0-42a9-bf97-0eec0cf0f1fd",
+    "usuario": "gasoma",
+    "contrasena": "28522177",
+    "rol": "alumno"
   }
 ]

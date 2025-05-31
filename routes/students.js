@@ -1,10 +1,9 @@
+// routes/students.js
 import express from 'express';
-import { renderStudentDashboard } from '../controllers/student/studentController.js';
-import { requireLogin } from '../middlewares/authMiddleware.js';
+import { vistaCursosAlumno } from '../controllers/student/studentController.js';
 
 const router = express.Router();
 
-// Ruta para mostrar el menú del alumno
-router.get('/', requireLogin, renderStudentDashboard);
+router.get('/', vistaCursosAlumno);
 
 export default router;

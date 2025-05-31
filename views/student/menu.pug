@@ -1,69 +1,114 @@
 doctype html
 html
   head
-    title Menú del Alumno
+    meta(charset="UTF-8")
+    title Mis Cursos
     style.
       body {
         font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f4f4f4;
         padding: 20px;
-        background-color: #f8f9fa;
-        text-align: center;
       }
-      .logout-btn {
-        position: absolute;
-        top: 20px;
-        right: 30px;
-        background-color: #dc3545;
-        color: white;
-        border: none;
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         padding: 10px 20px;
+        background-color: #1976d2;
+        color: white;
+        border-radius: 8px;
+      }
+
+      .logout-btn {
+        background-color: #f44336;
+        border: none;
+        color: white;
+        padding: 8px 14px;
+        font-size: 14px;
         border-radius: 5px;
         cursor: pointer;
-        text-decoration: none;
-        font-size: 14px;
+        transition: background-color 0.3s ease;
       }
+
       .logout-btn:hover {
-        background-color: #c82333;
+        background-color: #d32f2f;
       }
-      .card-container {
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-top: 20px;
+      }
+
+      .cards-container {
         display: flex;
         flex-wrap: wrap;
-        justify-content: center;
         gap: 20px;
+        justify-content: center;
         margin-top: 30px;
       }
+
       .card {
-        background: white;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        width: 300px;
+        background-color: white;
         padding: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        transition: transform 0.2s;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        width: 250px;
+        transition: transform 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
+
       .card:hover {
         transform: scale(1.03);
       }
+
       .card h2 {
-        margin: 10px 0;
+        margin: 0 0 10px;
+        font-size: 20px;
+        color: #1976d2;
       }
+
       .card p {
         margin: 5px 0;
-        font-size: 16px;
+        color: #555;
       }
+
+      .asistencia-btn {
+        margin-top: 15px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-size: 14px;
+      }
+
+      .asistencia-btn:hover {
+        background-color: #388e3c;
+      }
+
   body
-    h1 Bienvenido al Panel del Alumno
+    .header
+      h2 Bienvenido, Alumno
+      form(action="/logout" method="POST")
+        button.logout-btn(type="submit") Logout
 
-    a.logout-btn(href="/logout") Cerrar Sesión
+    h1 Mis Cursos Inscritos
 
-    if mensaje
-      p #{mensaje}
-    else if cursos.length === 0
-      p No estás inscrito en ningún curso.
-    else
-      .card-container
+    .cards-container
+      if cursos.length
         each curso in cursos
           .card
-            h2= curso.nombreCurso
+            h2= curso.nombre
             p Día: #{curso.dia}
             p Horario: #{curso.horario}
+            form(action=`/asistencia/${curso.id}` method="POST")
+              button.asistencia-btn(type="submit") Dar Asistencia
+      else
+        p(style="text-align:center; margin-top: 40px; color: #888;") No estás inscrito en ningún curso.
