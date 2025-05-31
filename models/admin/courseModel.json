@@ -5,5 +5,19 @@
     "carrera": "Curso",
     "dia": "Martes",
     "horario": "10hs"
+  },
+  {
+    "id": "1748718357592",
+    "nombre": "Figma",
+    "carrera": "Ciurso",
+    "dia": "Lunes",
+    "horario": "10hs"
+  },
+  {
+    "id": "1748720458693",
+    "nombre": "NodeJs",
+    "carrera": "Curso",
+    "dia": "Martes",
+    "horario": "10hs"
   }
 ]

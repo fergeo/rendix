@@ -22,8 +22,13 @@ app.use(session({
   saveUninitialized: false
 }));
 
+
+app.use(express.json());
+
 // Middleware para analizar datos de formularios
 app.use(express.urlencoded({ extended: true }));
+
+
 
 // Configuración del motor de plantillas
 app.set('view engine', 'pug');
@@ -36,7 +41,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', authRoutes);
 
 // Rutas protegidas del administrador
-app.use('/admin', requireLogin, adminRoutes);
+//app.use('/admin', requireLogin, adminRoutes);
+app.use('/admin', adminRoutes);
 
 // Ruta protegida para el menú de admin
 app.get('/admin/menu', requireLogin, (req, res) => {
