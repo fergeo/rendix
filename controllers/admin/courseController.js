@@ -136,7 +136,7 @@ export const modificarCurso = async (req, res) => {
     if (req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json') {
         return res.status(200).json({ mensaje: '✏️ Curso modificado correctamente', curso: cursoModificado });
     } else {
-        return res.redirect('/admin/cursos/modificar');
+        return res.redirect('/admin/modificacion-curso');
     }
 };
 

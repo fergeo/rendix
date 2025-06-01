@@ -60,6 +60,7 @@ router.post('/cursos/borrar', borrarCursos);
 router.get('/modificacion-curso', mostrarModificar);
 router.post('/cursos/modificar', modificarCurso);
 
+
 // Consulta de cursos
 router.get('/cursos/consulta', listarCursos);
 
