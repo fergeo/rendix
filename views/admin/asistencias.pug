@@ -1,0 +1,76 @@
+doctype html
+html
+    head
+        meta(charset="UTF-8")
+        title Lista de Asistencia
+        style.
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f9f9f9;
+                padding: 20px;
+            }
+            h1 {
+                color: #333;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                background: white;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            th, td {
+                padding: 12px 15px;
+                border: 1px solid #ddd;
+                text-align: left;
+            }
+            th {
+                background-color: #1976d2;
+                color: white;
+            }
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+            .btn-volver {
+                margin-top: 20px;
+                padding: 10px 20px;
+                background-color: #1976d2;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+                display: inline-block;
+            }
+            .btn-volver:hover {
+                background-color: #145a9c;
+            }
+    body
+        h1 Lista de Asistencia
+
+        if asistencias.length > 0
+            table
+                thead
+                    tr
+                        th Día
+                        th Horario
+                        th Nombre
+                        th Apellido
+                        th DNI
+                        th Curso
+                tbody
+                    each item in asistencias
+                        tr
+                            td= item.fecha
+                            td= item.hora
+                            td= item.nombre
+                            td= item.apellido
+                            td= item.dni
+                            td= item.cursoNombre
+        else
+            p No hay registros de asistencia para mostrar.
+
+        // Botón para volver al menú admin
+        form(action="/admin/menu" method="GET")
+            button.btn-volver(type="submit") Volver

@@ -11,35 +11,32 @@ html
         padding: 20px;
       }
 
-      .header {
+      header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 10px 20px;
-        background-color: #1976d2;
-        color: white;
-        border-radius: 8px;
-      }
-
-      .logout-btn {
-        background-color: #f44336;
-        border: none;
-        color: white;
-        padding: 8px 14px;
-        font-size: 14px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-
-      .logout-btn:hover {
-        background-color: #d32f2f;
       }
 
       h1 {
-        text-align: center;
         color: #333;
-        margin-top: 20px;
+      }
+
+      .logout-form {
+        margin: 0;
+      }
+
+      .logout-form button {
+        padding: 8px 12px;
+        background-color: #d32f2f;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .logout-form button:hover {
+        background-color: #b71c1c;
       }
 
       .cards-container {
@@ -57,9 +54,7 @@ html
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         width: 250px;
         transition: transform 0.2s ease;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        position: relative;
       }
 
       .card:hover {
@@ -77,29 +72,37 @@ html
         color: #555;
       }
 
-      .asistencia-btn {
-        margin-top: 15px;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        font-size: 14px;
+      .card form {
+        margin-top: 10px;
       }
 
-      .asistencia-btn:hover {
+      .card button {
+        width: 100%;
+        padding: 8px;
         background-color: #388e3c;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .card button:hover {
+        background-color: #2e7d32;
+      }
+
+      .asistencia-msg {
+        color: green;
+        font-weight: bold;
+        margin-bottom: 8px;
+        text-align: center;
       }
 
   body
-    .header
-      h2 Bienvenido, Alumno
-      form(action="/logout" method="POST")
-        button.logout-btn(type="submit") Logout
-
-    h1 Mis Cursos Inscritos
+    header
+      h1 Mis Cursos Inscritos
+      form.logout-form(action="/logout" method="POST")
+        button(type="submit") Logout
 
     .cards-container
       if cursos.length
@@ -108,7 +111,11 @@ html
             h2= curso.nombre
             p Día: #{curso.dia}
             p Horario: #{curso.horario}
-            form(action=`/asistencia/${curso.id}` method="POST")
-              button.asistencia-btn(type="submit") Dar Asistencia
+            if asistenciaDada
+              // Aquí mostramos el mensaje sólo si la query 'asistencia=ok' llegó
+              .asistencia-msg Asistencia Dada
+            form(action="/student/asistencia" method="POST")
+              input(type="hidden" name="cursoId" value=curso.id)
+              button(type="submit") Dar Asistencia
       else
         p(style="text-align:center; margin-top: 40px; color: #888;") No estás inscrito en ningún curso.

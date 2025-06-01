@@ -23,6 +23,11 @@ import {
   getInscripcionesWithDetails // lo necesitaremos para la lista
 } from '../controllers/admin/inscriptionController.js';
 
+
+// Controladores de Aistencias
+import { listarAsistencias } from '../controllers/admin/asistenciaController.js';
+
+
 const router = Router();
 
 // ─── Middleware de logging ────────────────────────────────────────────
@@ -149,5 +154,14 @@ router.post('/modificarInscripcion', async (req, res) => {
     res.status(500).send('Error al modificar inscripción');
   }
 });
+
+
+// ─── Sección de ASISTENCIAS ────────────────────────────────────────────────
+
+router.get('/asistencias', listarAsistencias);
+
+
+
+
 
 export default router;
