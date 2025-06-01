@@ -62,7 +62,9 @@ router.post('/cursos/modificar', modificarCurso);
 
 
 // Consulta de cursos
-router.get('/cursos/consulta', listarCursos);
+//router.get('/cursos/consulta', listarCursos);
+router.get('/consultarCurso', listarCursos); 
+
 
 // ─── Sección de INSCRIPCIONES ─────────────────────────────────────────
 router.get('/inscripciones', (req, res) => {

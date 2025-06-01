@@ -140,12 +140,20 @@ export const modificarCurso = async (req, res) => {
     }
 };
 
+
 // Consultar todos los cursos
 export const listarCursos = async (req, res) => {
     const cursos = await readCursos();
 
-    if (req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json') {
-        return res.status(200).json(cursos);
+    const aceptaJSON = req.headers.accept?.includes('application/json');
+    const esJSON = req.headers['content-type'] === 'application/json';
+
+    if (aceptaJSON || esJSON || req.xhr) {
+        return res.status(200).json({
+            mensaje: '📚 Lista de cursos obtenida correctamente',
+            cantidad: cursos.length,
+            cursos
+        });
     } else {
         return res.render('admin/consultarCurso', { cursos });
     }
