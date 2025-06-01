@@ -55,15 +55,16 @@ router.post('/cursos/alta', agregarCurso);
 // Baja de curso
 router.get('/cursos/baja', mostrarBaja);
 router.post('/cursos/borrar', borrarCursos);
+router.delete('/cursos/borrar', borrarCursos);
 
 // Modificación de curso
 router.get('/modificacion-curso', mostrarModificar);
 router.post('/cursos/modificar', modificarCurso);
-
+router.put('/cursos/modificar', modificarCurso);
 
 // Consulta de cursos
-//router.get('/cursos/consulta', listarCursos);
-router.get('/consultarCurso', listarCursos); 
+router.get('/cursos/consulta', listarCursos);
+
 
 
 // ─── Sección de INSCRIPCIONES ─────────────────────────────────────────
