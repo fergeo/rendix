@@ -9,6 +9,10 @@ import adminRoutes from './routes/admin.js';
 import studentRoutes from './routes/students.js';
 import { requireLogin } from './middlewares/authMiddleware.js';
 
+import { conectarDB } from './config/db.js';
+
+conectarDB(); // conecta a MongoDB Atlas
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
