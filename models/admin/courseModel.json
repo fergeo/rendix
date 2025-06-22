@@ -4,6 +4,8 @@
     "nombre": "React",
     "carrera": "Curso",
     "dia": "Sabado",
-    "horario": "11:00"
+    "horario": "11:00",
+    "capacidad": 20,
+    "inscriptos": 0
   }
 ]

@@ -2,29 +2,27 @@
   "name": "rendix",
   "version": "1.0.0",
   "description": "Desarrollo de la API de la plataforma rendix",
+  "main": "index.js",
   "type": "module",
-  "main": "api/index.js",     
   "scripts": {
-    "dev": "nodemon api/index.js",
-    "start": "node api/index.js"   
+    "dev": "nodemon index.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fergeo/rendix.git"
+    "url": "https://github.com/fergeo/rendix/tree/main"
   },
   "keywords": [
     "node",
-    "express",
-    "vercel",
-    "serverless"
+    "js"
   ],
   "author": "Fernando Espindola",
   "license": "ISC",
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
+    "jsonwebtoken": "^9.0.2",
     "pug": "^3.0.3",
-    "serverless-http": "^3.2.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

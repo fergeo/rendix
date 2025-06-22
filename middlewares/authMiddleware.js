@@ -1,7 +1,19 @@
+import jwt from 'jsonwebtoken';
+
+const SECRET_KEY = 'clave-jwt-rendix';
+
 export const requireLogin = (req, res, next) => {
-    if (req.session && req.session.usuario && req.session.rol === 'administrador') {
-        next();
-    } else {
-        res.redirect('/login');
-    }
+  const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return res.redirect('/login');
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.redirect('/login');
+  }
 };
