@@ -37,7 +37,7 @@ html
         // Dropdown para seleccionar curso
         .mb-3
           label.form-label(for="cursoSeleccionado") Seleccionar Curso
-          select.form-select(name="cursoId", id="cursoSeleccionado", required)
+          select.form-select(name="cursoSeleccionado", id="cursoSeleccionado", required)
             option(value="") -- Seleccione un curso --
             each curso in cursos
               option(value=curso._id) #{curso.nombre} - #{curso.carrera} - #{curso.dia} - #{curso.horario}
@@ -50,7 +50,7 @@ html
 
           .col-md-6.mb-3
             label.form-label(for="carrera") Carrera o Curso
-            input.form-control(type="text", id="carrera", name="carrera", readonly)
+            input.form-control(type="text", id="carrera", name="carreraCurso", readonly)
 
         .row
           .col-md-6.mb-3
@@ -79,7 +79,6 @@ html
               th Carrera o Curso
               th Día
               th Horario
-
           tbody
             each inscripcion in inscripciones
               tr
@@ -94,4 +93,26 @@ html
     // Pasar los cursos al script JS
     script.
       const cursos = !{JSON.stringify(cursos)};
-    script(src="/js/inscripcion.js")
+
+      const selectCurso = document.getElementById('cursoSeleccionado');
+      const nombreCursoInput = document.getElementById('nombreCurso');
+      const carreraInput = document.getElementById('carrera');
+      const diaInput = document.getElementById('dia');
+      const horarioInput = document.getElementById('horario');
+
+      selectCurso.addEventListener('change', () => {
+        const cursoId = selectCurso.value;
+        const curso = cursos.find(c => c._id === cursoId);
+
+        if (curso) {
+          nombreCursoInput.value = curso.nombre || '';
+          carreraInput.value = curso.carrera || '';
+          diaInput.value = curso.dia || '';
+          horarioInput.value = curso.horario || '';
+        } else {
+          nombreCursoInput.value = '';
+          carreraInput.value = '';
+          diaInput.value = '';
+          horarioInput.value = '';
+        }
+      });

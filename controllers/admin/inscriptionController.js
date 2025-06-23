@@ -15,9 +15,9 @@ export async function getInscripcionesWithDetails() {
     if (!alumno || !curso) continue;
 
     resultados.push({
-      id: ins._id,
-      studentId: alumno._id,
-      courseId: curso._id,
+      id: ins._id.toString(),
+      studentId: alumno._id.toString(),
+      courseId: curso._id.toString(),
       nombre: alumno.nombre,
       apellido: alumno.apellido,
       dni: alumno.dni,
@@ -37,7 +37,7 @@ export async function getInscripcionesWithDetails() {
 // Renderizar alta de inscripción
 export async function renderAltaInscripcion(req, res) {
   try {
-    const cursos = await Curso.find();
+    const cursos = await Curso.find().lean();
     const inscripciones = await getInscripcionesWithDetails();
     res.render('admin/altaInscripcion', { cursos, inscripciones });
   } catch (err) {
@@ -54,7 +54,6 @@ function generarUsuario(nombre, apellido) {
 // Agregar inscripción
 export async function addInscription(req, res) {
   try {
-    // En formulario envías cursoSeleccionado, no cursoId
     const {
       nombre,
       apellido,
@@ -65,9 +64,15 @@ export async function addInscription(req, res) {
       cursoSeleccionado
     } = req.body;
 
+    // Validar campos obligatorios
+    if (!nombre || !apellido || !dni || !cursoSeleccionado) {
+      return res.status(400).send('Faltan datos obligatorios para la inscripción');
+    }
+
     const curso = await Curso.findById(cursoSeleccionado);
     if (!curso) throw new Error('Curso no encontrado');
 
+    curso.inscriptos = curso.inscriptos || 0;
     const capacidadMax = curso.carrera.toLowerCase().includes('carrera') ? 30 : 20;
 
     if (curso.inscriptos >= capacidadMax) {
@@ -77,11 +82,23 @@ export async function addInscription(req, res) {
         dni,
         correoElectronico,
         telefono,
-        cursoId: curso._id,
-        enEspera: true
+        cursoId: curso._id
       });
-      // Redirigir a alta con mensaje en query o flash (opcional)
       return res.redirect('/admin/inscripciones/alta');
+    }
+
+    let alumno = await Alumno.findOne({ dni });
+
+    // Evitar inscribir alumno ya inscrito en el mismo curso
+    if (alumno) {
+      const inscripcionExistente = await Inscripcion.findOne({
+        studentId: alumno._id,
+        courseId: curso._id
+      });
+      if (inscripcionExistente) {
+        // Ya está inscrito, redirigir o mostrar mensaje
+        return res.status(400).send('El alumno ya está inscrito en este curso');
+      }
     }
 
     const username = generarUsuario(nombre, apellido);
@@ -94,7 +111,6 @@ export async function addInscription(req, res) {
       });
     }
 
-    let alumno = await Alumno.findOne({ dni });
     if (!alumno) {
       alumno = await Alumno.create({
         nombre,
@@ -112,8 +128,7 @@ export async function addInscription(req, res) {
       courseId: curso._id
     });
 
-    // Incrementar inscriptos y guardar
-    curso.inscriptos = (curso.inscriptos || 0) + 1;
+    curso.inscriptos += 1;
     await curso.save();
 
     return res.redirect('/admin/inscripciones/alta');
@@ -122,6 +137,7 @@ export async function addInscription(req, res) {
     return res.status(500).send('Error al procesar la inscripción');
   }
 }
+
 
 // Consultar inscripciones
 export async function renderConsultaInscripciones(req, res) {
@@ -148,11 +164,21 @@ export async function renderBajaInscripciones(req, res) {
 // Eliminar inscripciones
 export async function deleteInscriptions(req, res) {
   try {
-    const { inscripcionesSeleccionadas } = req.body;
-    const ids = Array.isArray(inscripcionesSeleccionadas)
-      ? inscripcionesSeleccionadas
-      : [inscripcionesSeleccionadas];
-    await Inscripcion.deleteMany({ _id: { $in: ids } });
+    const { seleccionados } = req.body;
+    const ids = Array.isArray(seleccionados) ? seleccionados : [seleccionados];
+
+    for (const id of ids) {
+      const inscripcion = await Inscripcion.findById(id);
+      if (inscripcion) {
+        const curso = await Curso.findById(inscripcion.courseId);
+        if (curso && curso.inscriptos > 0) {
+          curso.inscriptos -= 1;
+          await curso.save();
+        }
+        await inscripcion.deleteOne();
+      }
+    }
+
     return res.redirect('/admin/inscripciones/baja');
   } catch (err) {
     console.error('Error al borrar inscripciones:', err);
@@ -160,7 +186,7 @@ export async function deleteInscriptions(req, res) {
   }
 }
 
-// Renderizar listado para modificación (sin inscripción seleccionada)
+// Renderizar listado para modificar sin inscripción seleccionada
 export async function renderModificarInscripcion(req, res) {
   try {
     const inscripciones = await getInscripcionesWithDetails();
@@ -176,24 +202,20 @@ export async function renderModificarInscripcionById(req, res) {
   try {
     const id = req.params.id;
     const inscripciones = await getInscripcionesWithDetails();
-    // Buscar la inscripción que corresponde al id
-    const inscripcionSeleccionada = inscripciones.find(i => i.id.toString() === id.toString());
+    const inscripcionSeleccionada = inscripciones.find(i => i.id === id);
 
     if (!inscripcionSeleccionada) {
       return res.status(404).send('Inscripción no encontrada');
     }
 
-    res.render('admin/modificarInscripcion', { 
-      inscripciones,
-      inscripcionSeleccionada
-    });
+    res.render('admin/modificarInscripcion', { inscripciones, inscripcionSeleccionada });
   } catch (err) {
     console.error('Error en renderModificarInscripcionById:', err);
     res.status(500).send('Error cargando inscripción para modificar');
   }
 }
 
-// Actualizar inscripción
+// Actualizar inscripción y redirigir
 export async function updateInscription(req, res) {
   try {
     const {
@@ -210,11 +232,9 @@ export async function updateInscription(req, res) {
       horario
     } = req.body;
 
-    // Buscar la inscripción para actualizar curso y alumno
     const inscripcion = await Inscripcion.findById(idInscripcion);
     if (!inscripcion) return res.status(404).send('Inscripción no encontrada');
 
-    // Actualizar alumno asociado
     const alumno = await Alumno.findById(inscripcion.studentId);
     if (!alumno) return res.status(404).send('Alumno no encontrado');
 
@@ -226,7 +246,6 @@ export async function updateInscription(req, res) {
     alumno.telefono = telefono;
     await alumno.save();
 
-    // Buscar curso por nombre, carrera, día y horario para actualizar courseId
     const curso = await Curso.findOne({
       nombre: nombreCurso,
       carrera: carreraCurso,
@@ -234,16 +253,14 @@ export async function updateInscription(req, res) {
       horario: horario
     });
 
-    if (curso) {
-      inscripcion.courseId = curso._id;
-    } else {
-      // Si no encuentra curso, puede optar por no cambiar o enviar error
+    if (!curso) {
       return res.status(400).send('Curso no encontrado con los datos proporcionados');
     }
 
+    inscripcion.courseId = curso._id;
     await inscripcion.save();
 
-    return res.redirect('/admin/inscripciones/modificar');
+    return res.redirect(`/admin/inscripciones/modificar/${idInscripcion}`);
   } catch (err) {
     console.error('Error al actualizar inscripción:', err);
     res.status(500).send('Error al modificar inscripción');

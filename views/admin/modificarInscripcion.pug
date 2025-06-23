@@ -27,6 +27,7 @@ html
       th {
         background-color: #f0f0f0;
       }
+
   body
     .container
       h1.text-center.mb-4 Modificar Inscripciones
@@ -117,3 +118,7 @@ html
                   a.btn.btn-primary(href=`/admin/inscripciones/modificar/${inscripcion.id}`) Modificar
       else
         p.text-center No hay inscripciones registradas.
+
+      // Botón volver
+      .text-center.mt-4
+        a.btn.btn-secondary(href="/admin/inscripciones") Volver
