@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const SECRET_KEY = 'clave-jwt-rendix';
+const SECRET_KEY = 'R3nd1X/0fge';
 
 export const requireLogin = (req, res, next) => {
   const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];

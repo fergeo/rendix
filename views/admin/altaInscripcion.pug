@@ -9,7 +9,7 @@ html
     .container.mt-5
       h1 Alta de Inscripciones
 
-      form(method="POST", action="/admin/altaInscripcion")
+      form(method="POST", action="/admin/inscripciones/alta")
         .mb-3
           label.form-label(for="nombre") Nombre
           input.form-control(type="text", name="nombre", id="nombre", required)
@@ -37,10 +37,10 @@ html
         // Dropdown para seleccionar curso
         .mb-3
           label.form-label(for="cursoSeleccionado") Seleccionar Curso
-          select.form-select(name="cursoSeleccionado", id="cursoSeleccionado", required)
+          select.form-select(name="cursoId", id="cursoSeleccionado", required)
             option(value="") -- Seleccione un curso --
             each curso in cursos
-              option(value=curso.id) #{curso.nombre} - #{curso.carrera} - #{curso.dia} - #{curso.horario}
+              option(value=curso._id) #{curso.nombre} - #{curso.carrera} - #{curso.dia} - #{curso.horario}
 
         // Campos auto completados desde el curso seleccionado (solo lectura)
         .row
@@ -79,6 +79,7 @@ html
               th Carrera o Curso
               th Día
               th Horario
+
           tbody
             each inscripcion in inscripciones
               tr

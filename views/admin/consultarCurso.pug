@@ -49,6 +49,8 @@ html
           th Carrera
           th Día
           th Horario
+          th Capacidd
+          th Inscriptos
       tbody
         each curso in cursos
           tr
@@ -56,5 +58,7 @@ html
             td #{curso.carrera}
             td #{curso.dia}
             td #{curso.horario}
+            td #{curso.capacidad}
+            td #{curso.inscriptos}
 
     a.volver-btn(href="/admin/cursos") Volver

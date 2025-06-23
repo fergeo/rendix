@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   selectCurso.addEventListener('change', () => {
     const cursoId = selectCurso.value;
+
     if (!cursoId) {
       nombreCursoInput.value = '';
       carreraInput.value = '';
@@ -15,7 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const curso = cursos.find(c => c.id === cursoId);
+    const curso = cursos.find(c => c._id === cursoId);
+
     if (curso) {
       nombreCursoInput.value = curso.nombre || '';
       carreraInput.value = curso.carrera || '';

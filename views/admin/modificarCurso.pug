@@ -9,11 +9,11 @@ html
         margin: 30px;
         display: flex;
         flex-direction: column;
-        align-items: center; /* Centra horizontalmente todo */
+        align-items: center;
       }
       h1 {
         color: #333;
-        text-align: center; /* Centra el título */
+        text-align: center;
       }
       form {
         margin-bottom: 30px;
@@ -25,13 +25,13 @@ html
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        align-items: center; /* Centra elementos dentro del formulario */
+        align-items: center;
       }
       label {
         display: block;
         margin-top: 10px;
         font-weight: bold;
-        text-align: center; /* Centrar texto etiquetas */
+        text-align: center;
         width: 100%;
       }
       input[type="text"], select {
@@ -39,13 +39,13 @@ html
         padding: 8px;
         margin-top: 5px;
         box-sizing: border-box;
-        text-align: center; /* Centrar texto dentro de inputs */
+        text-align: center;
       }
       .botones {
         margin-top: 20px;
         display: flex;
         gap: 15px;
-        justify-content: center; /* Centrar botones */
+        justify-content: center;
         width: 100%;
       }
       button {
@@ -65,7 +65,7 @@ html
       table {
         width: 80%;
         border-collapse: collapse;
-        margin: 0 auto 30px auto; /* Centra tabla y margen abajo */
+        margin: 0 auto 30px auto;
       }
       th, td {
         border: 1px solid #ddd;
@@ -104,6 +104,12 @@ html
       label(for="horario") Horario
       input(type="text" id="horario" name="horario" placeholder="Ejemplo: 08:00 - 10:00" required)
 
+      label(for="capacidad") Capacidad
+      input(type="text" id="capacidad" name="capacidad" placeholder="Ejemplo: 20" required)
+
+      label(for="inscriptos") Inscriptos
+      input(type="text" id="inscriptos" name="inscriptos" placeholder="Ejemplo: 10" required)
+
       .botones
         button.aceptar(type="submit") Aceptar
         button.cancelar(type="button" onclick="window.location.href='/admin/cursos'") Cancelar
@@ -118,24 +124,54 @@ html
           th Carrera
           th Día
           th Horario
+          th Capacidad
+          th Inscriptos
           th Acción
       tbody
         each curso in cursos
           tr
             td
-              input(type="radio" name="seleccionarCurso" value=curso.id onclick=`cargarCurso('${curso.id}', '${curso.nombre}', '${curso.carrera}', '${curso.dia}', '${curso.horario}')`)
+              input(
+                type="radio" 
+                name="seleccionarCurso" 
+                value=curso._id 
+                onclick=`cargarCurso(
+                  '${curso._id}',
+                  '${curso.nombre.replace(/'/g, "\\'")}',
+                  '${curso.carrera.replace(/'/g, "\\'")}',
+                  '${curso.dia.replace(/'/g, "\\'")}',
+                  '${curso.horario.replace(/'/g, "\\'")}',
+                  '${curso.capacidad}',
+                  '${curso.inscriptos}'
+                )`
+              )
             td #{curso.nombre}
             td #{curso.carrera}
             td #{curso.dia}
             td #{curso.horario}
+            td #{curso.capacidad}
+            td #{curso.inscriptos}
             td
-              button.modificar(type="button" onclick=`cargarCurso('${curso.id}', '${curso.nombre}', '${curso.carrera}', '${curso.dia}', '${curso.horario}')`) Modificar
+              button.modificar(
+                type="button" 
+                onclick=`cargarCurso(
+                  '${curso._id}',
+                  '${curso.nombre.replace(/'/g, "\\'")}',
+                  '${curso.carrera.replace(/'/g, "\\'")}',
+                  '${curso.dia.replace(/'/g, "\\'")}',
+                  '${curso.horario.replace(/'/g, "\\'")}',
+                  '${curso.capacidad}',
+                  '${curso.inscriptos}'
+                )`
+              ) Modificar
 
     script.
-      function cargarCurso(id, nombre, carrera, dia, horario) {
+      function cargarCurso(id, nombre, carrera, dia, horario, capacidad, inscriptos) {
         document.getElementById('cursoId').value = id;
         document.getElementById('nombre').value = nombre;
         document.getElementById('carrera').value = carrera;
         document.getElementById('dia').value = dia;
         document.getElementById('horario').value = horario;
+        document.getElementById('capacidad').value = capacidad;
+        document.getElementById('inscriptos').value = inscriptos;
       }

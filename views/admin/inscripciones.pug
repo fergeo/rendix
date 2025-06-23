@@ -1,45 +1,46 @@
 doctype html
 html
-    head
-        title Menú Inscripciones
-        style.
-            body {
-                font-family: Arial, sans-serif;
-                text-align: center;
-                padding: 50px;
-                background-color: #f0f0f0;
-            }
-            h1 {
-                margin-bottom: 40px;
-            }
-            .btn {
-                display: block;
-                width: 250px;
-                margin: 10px auto;
-                padding: 12px;
-                background-color: #3498db;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                font-size: 16px;
-                cursor: pointer;
-                text-decoration: none;
-            } 
-            .btn:hover {
-                background-color: #2980b9;
-            }
-            .btn-volver {
-                background-color: #95a5a6;
-            }
-            .btn-volver:hover {
-                background-color: #7f8c8d;
-            }
-    body
-        h1 Menú de Inscripciones
+  head
+    title Menú Inscripciones
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 50px;
+        background-color: #f0f0f0;
+      }
+      h1 {
+        margin-bottom: 40px;
+      }
+      .btn {
+        display: block;
+        width: 250px;
+        margin: 10px auto;
+        padding: 12px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        text-decoration: none;
+      } 
+      .btn:hover {
+        background-color: #2980b9;
+      }
+      .btn-volver {
+        background-color: #95a5a6;
+      }
+      .btn-volver:hover {
+        background-color: #7f8c8d;
+      }
+  body
+    h1 Menú de Inscripciones
 
-        a.btn(href="/admin/altaInscripcion") Alta Inscripción
-        a.btn(href="/admin/modificarInscripcion") Modificar Inscripción
-        a.btn(href="/admin/consultarInscripcion") Consultar Inscripciones
-        a.btn(href="/admin/bajaInscripcion") Baja de Inscripción
+    // Estos enlaces ahora apuntan al archivo correcto en routes/inscriptionRoutes.js
+    a.btn(href="/admin/inscripciones/alta") Alta Inscripción
+    a.btn(href="/admin/inscripciones/modificar") Modificar Inscripción
+    a.btn(href="/admin/inscripciones/consultar") Consultar Inscripciones
+    a.btn(href="/admin/inscripciones/baja") Baja de Inscripción
 
-        a.btn.btn-volver(href="/admin/menu") Volver
+    a.btn.btn-volver(href="/admin/menu") Volver

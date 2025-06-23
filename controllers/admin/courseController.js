@@ -1,160 +1,101 @@
-import { readFile, writeFile } from 'fs/promises';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import Curso from '../../models/admin/Curso.js';
 
-// Configurar ruta al archivo JSON
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const dataPath = resolve(__dirname, '../../models/admin/courseModel.json');
-
-// Leer cursos desde JSON
-async function readCursos() {
-    try {
-        const data = await readFile(dataPath, 'utf-8');
-        return JSON.parse(data);
-    } catch (err) {
-        return [];
-    }
-}
-
-// Escribir cursos al JSON
-async function writeCursos(cursos) {
-    await writeFile(dataPath, JSON.stringify(cursos, null, 2));
-}
-
-// Mostrar formulario de alta
-export const mostrarAlta = async (req, res) => {
-    const cursos = await readCursos();
+// Clase controladora
+class CursoController {
+  // Mostrar formulario de alta
+  static async mostrarAlta(req, res) {
+    const cursos = await Curso.find();
     res.render('admin/altaCurso', { cursos });
-};
+  }
 
-// Agregar un nuevo curso
-export const agregarCurso = async (req, res) => {
-    const cursos = await readCursos();
+  // Crear curso
+  static async agregarCurso(req, res) {
     const { nombre, carrera, dia, horario } = req.body;
 
     if (!nombre || !carrera || !dia || !horario) {
-        const mensaje = 'Faltan campos obligatorios';
-        if (req.headers.accept?.includes('application/json')) {
-            return res.status(400).json({ error: mensaje });
-        } else {
-            return res.status(400).send(mensaje);
-        }
+      const mensaje = 'Faltan campos obligatorios';
+      return req.headers.accept?.includes('application/json')
+        ? res.status(400).json({ error: mensaje })
+        : res.status(400).send(mensaje);
     }
 
-    const nuevoCurso = {
-        id: Date.now().toString(),
-        nombre,
-        carrera,
-        dia,
-        horario
-    };
+    const capacidad = carrera.toLowerCase() === 'curso' ? 20 : 30;
+    const nuevoCurso = new Curso({ nombre, carrera, dia, horario, capacidad, inscriptos: 0 });
 
-    cursos.push(nuevoCurso);
-    await writeCursos(cursos);
+    await nuevoCurso.save();
 
-    if (req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json') {
-        return res.status(201).json({ mensaje: '✅ Curso agregado correctamente', curso: nuevoCurso });
-    } else {
-        return res.redirect('/admin/cursos/alta');
-    }
-};
+    return req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json'
+      ? res.status(201).json({ mensaje: 'Curso agregado correctamente', curso: nuevoCurso })
+      : res.redirect('/admin/cursos/alta');
+  }
 
-// Mostrar formulario de baja
-export const mostrarBaja = async (req, res) => {
-    const cursos = await readCursos();
+  // Mostrar formulario de baja
+  static async mostrarBaja(req, res) {
+    const cursos = await Curso.find();
     res.render('admin/bajaCurso', { cursos });
-};
+  }
 
-// Borrar cursos
-export const borrarCursos = async (req, res) => {
-    let cursos = await readCursos();
+  // Borrar cursos
+  static async borrarCursos(req, res) {
     const cursosSeleccionados = req.body.cursosSeleccionados;
-
     if (!cursosSeleccionados || cursosSeleccionados.length === 0) {
-        const mensaje = 'No se especificaron cursos para eliminar';
-        if (req.headers.accept?.includes('application/json')) {
-            return res.status(400).json({ error: mensaje });
-        } else {
-            return res.status(400).send(mensaje);
-        }
+      const mensaje = 'No se especificaron cursos para eliminar';
+      return req.headers.accept?.includes('application/json')
+        ? res.status(400).json({ error: mensaje })
+        : res.status(400).send(mensaje);
     }
 
     const idsAEliminar = Array.isArray(cursosSeleccionados)
-        ? cursosSeleccionados
-        : [cursosSeleccionados];
+      ? cursosSeleccionados
+      : [cursosSeleccionados];
 
-    const cursosAntes = cursos.length;
-    cursos = cursos.filter(c => !idsAEliminar.includes(c.id));
-    const eliminados = cursosAntes - cursos.length;
+    const result = await Curso.deleteMany({ _id: { $in: idsAEliminar } });
 
-    await writeCursos(cursos);
+    return req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json'
+      ? res.status(200).json({ mensaje: `Se eliminaron ${result.deletedCount} curso(s)` })
+      : res.redirect('/admin/cursos/baja');
+  }
 
-    if (req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json') {
-        return res.status(200).json({ mensaje: `🗑️ Se eliminaron ${eliminados} curso(s)` });
-    } else {
-        return res.redirect('/admin/cursos/baja');
-    }
-};
-
-// Mostrar formulario de modificación
-export const mostrarModificar = async (req, res) => {
-    const cursos = await readCursos();
+  // Mostrar formulario de modificación
+  static async mostrarModificar(req, res) {
+    const cursos = await Curso.find();
     res.render('admin/modificarCurso', { cursos });
-};
+  }
 
-// Modificar curso existente
-export const modificarCurso = async (req, res) => {
-    const { cursoId, nombre, carrera, dia, horario } = req.body;
-    let cursos = await readCursos();
+  // Modificar curso existente
+  static async modificarCurso(req, res) {
+    const { cursoId, nombre, carrera, dia, horario, capacidad, inscriptos } = req.body;
 
-    if (!cursoId || !nombre || !carrera || !dia || !horario) {
-        const mensaje = 'Faltan campos obligatorios para modificar el curso';
-        if (req.headers.accept?.includes('application/json')) {
-            return res.status(400).json({ error: mensaje });
-        } else {
-            return res.status(400).send(mensaje);
-        }
+    if (!cursoId || !nombre || !carrera || !dia || !horario || !capacidad || inscriptos === undefined) {
+      const mensaje = 'Faltan campos obligatorios';
+      return req.headers.accept?.includes('application/json')
+        ? res.status(400).json({ error: mensaje })
+        : res.status(400).send(mensaje);
     }
 
-    let cursoModificado = null;
+    const cursoActualizado = await Curso.findByIdAndUpdate(
+      cursoId,
+      { nombre, carrera, dia, horario, capacidad, inscriptos },
+      { new: true }
+    );
 
-    cursos = cursos.map(c => {
-        if (c.id === cursoId) {
-            cursoModificado = { ...c, nombre, carrera, dia, horario };
-            return cursoModificado;
-        }
-        return c;
-    });
-
-    if (!cursoModificado) {
-        return res.status(404).json({ error: 'Curso no encontrado' });
+    if (!cursoActualizado) {
+      return res.status(404).json({ error: 'Curso no encontrado' });
     }
 
-    await writeCursos(cursos);
+    return req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json'
+      ? res.status(200).json({ mensaje: 'Curso modificado correctamente', curso: cursoActualizado })
+      : res.redirect('/admin/cursos/modificacion');
+  }
 
-    if (req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json') {
-        return res.status(200).json({ mensaje: '✏️ Curso modificado correctamente', curso: cursoModificado });
-    } else {
-        return res.redirect('/admin/modificacion-curso');
-    }
-};
+  // Consultar cursos
+  static async listarCursos(req, res) {
+    const cursos = await Curso.find();
 
+    return req.headers.accept?.includes('application/json') || req.xhr
+      ? res.status(200).json({ mensaje: 'Lista de cursos', cantidad: cursos.length, cursos })
+      : res.render('admin/consultarCurso', { cursos });
+  }
+}
 
-// Consultar todos los cursos
-export const listarCursos = async (req, res) => {
-    const cursos = await readCursos();
-
-    const aceptaJSON = req.headers.accept?.includes('application/json');
-    const esJSON = req.headers['content-type'] === 'application/json';
-
-    if (aceptaJSON || esJSON || req.xhr) {
-        return res.status(200).json({
-            mensaje: '📚 Lista de cursos obtenida correctamente',
-            cantidad: cursos.length,
-            cursos
-        });
-    } else {
-        return res.render('admin/consultarCurso', { cursos });
-    }
-};
+export default CursoController;
