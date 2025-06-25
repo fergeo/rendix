@@ -1,5 +1,6 @@
 // routes/adminRoutes.js
 import express from 'express';
+import { listarAsistencias } from '../controllers/admin/asistenciaController.js';
 
 const router = express.Router();
 
@@ -16,17 +17,15 @@ router.get('/menu', (req, res) => {
 
 // Vista de gestión de cursos
 router.get('/cursos', (req, res) => {
-  res.render('admin/cursos');
+  res.render('admin/cursos'); // Asegúrate de que views/admin/cursos.pug exista
 });
 
 // Vista de gestión de inscripciones
 router.get('/inscripciones', (req, res) => {
-  res.render('admin/inscripciones');
+  res.render('admin/inscripciones'); // Asegúrate de que views/admin/inscripciones.pug exista
 });
 
 // Vista de gestión de asistencias
-router.get('/asistencias', (req, res) => {
-  res.render('admin/asistencias');
-});
+router.get('/asistencias', listarAsistencias); // Renderiza datos desde MongoDB
 
 export default router;

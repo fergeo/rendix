@@ -7,17 +7,18 @@ import cookieParser from 'cookie-parser';
 // Conexión a MongoDB
 import { conectarDB } from './config/db.js';
 
-// Middleware
+// Middleware autenticación JWT
 import { requireLogin } from './middlewares/authMiddleware.js';
 
 // Rutas
 import authRoutes from './routes/authRoutes.js';
-import adminRoutes from './routes/adminRoutes.js';         // Renombrado para evitar confusión
+import adminRoutes from './routes/adminRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import inscriptionRoutes from './routes/inscriptionRoutes.js';
-import studentRoutes from './routes/students.js';
+import studentRoutes from './routes/studentRoutes.js'; // ✅ Corrección aquí
 
-conectarDB(); // Conectar a MongoDB Atlas
+// Conectar a la base de datos
+conectarDB();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,18 +42,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', authRoutes);
 
 // Rutas protegidas con JWT
-// Agrupar rutas admin bajo /admin, usando el middleware requireLogin una sola vez
-app.use('/admin', requireLogin, adminRoutes);         // adminRoutes contiene rutas generales, p.ej. menú
-app.use('/admin/cursos', requireLogin, courseRoutes); // rutas específicas para cursos, prefijo /admin/cursos
-app.use('/admin/inscripciones', requireLogin, inscriptionRoutes); // rutas específicas inscripciones
-
-// Rutas para estudiantes
+app.use('/admin', requireLogin, adminRoutes);
+app.use('/admin/cursos', requireLogin, courseRoutes);
+app.use('/admin/inscripciones', requireLogin, inscriptionRoutes);
 app.use('/student', requireLogin, studentRoutes);
 
-// Manejar ruta menú admin dentro de adminRoutes.js (no aquí)
-// Por eso eliminamos el get('/admin/menu') de este archivo
-
-// Ruta 404 (al final)
+// Ruta 404 (si no se encuentra ninguna anterior)
 app.use((req, res) => {
   res.status(404).send('Página no encontrada');
 });
@@ -61,3 +56,5 @@ app.use((req, res) => {
 app.listen(port, () => {
   console.log(`Servidor activo en: http://localhost:${port}/login`);
 });
+
+export default app;

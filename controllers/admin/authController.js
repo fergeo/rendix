@@ -1,4 +1,6 @@
+// controllers/admin/authController.js
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import Usuario from '../../models/admin/Usuario.js';
 
 const SECRET_KEY = 'R3nd1X/0fge';
@@ -7,19 +9,24 @@ export const loginHandler = async (req, res) => {
   const { usuario, contrasena } = req.body;
 
   try {
-    // Buscar usuario en MongoDB Atlas
-    const usuarioValido = await Usuario.findOne({ usuario, contrasena });
-
-    if (!usuarioValido) {
+    // Buscar usuario por nombre de usuario
+    const usuarioDB = await Usuario.findOne({ usuario });
+    if (!usuarioDB) {
       return res.status(401).send('Usuario o contraseña incorrectos');
     }
 
-    // Generar JWT con ID real de MongoDB
+    // Comparar contrasena con hash almacenado
+    const passwordMatch = await bcrypt.compare(contrasena, usuarioDB.contrasena);
+    if (!passwordMatch) {
+      return res.status(401).send('Usuario o contraseña incorrectos');
+    }
+
+    // Generar JWT con id real de MongoDB
     const token = jwt.sign(
       {
-        id: usuarioValido._id,
-        usuario: usuarioValido.usuario,
-        rol: usuarioValido.rol
+        id: usuarioDB._id,
+        usuario: usuarioDB.usuario,
+        rol: usuarioDB.rol
       },
       SECRET_KEY,
       { expiresIn: '1h' }
@@ -32,8 +39,8 @@ export const loginHandler = async (req, res) => {
       sameSite: 'lax'
     });
 
-    // Redirigir según el rol
-    switch (usuarioValido.rol) {
+    // Redirigir según rol
+    switch (usuarioDB.rol) {
       case 'administrador':
         return res.redirect('/admin/menu');
       case 'alumno':

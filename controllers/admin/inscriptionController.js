@@ -3,10 +3,11 @@ import Alumno from '../../models/admin/Alumno.js';
 import Curso from '../../models/admin/Curso.js';
 import Usuario from '../../models/admin/Usuario.js';
 import ListaEspera from '../../models/admin/ListaEspera.js';
+import bcrypt from 'bcryptjs';  // <-- Importar bcryptjs
 
-// Obtener inscripciones con detalles
+// Obtener inscripciones con detalles (alumno + curso)
 export async function getInscripcionesWithDetails() {
-  const inscripciones = await Inscripcion.find();
+  const inscripciones = await Inscripcion.find().lean();
   const resultados = [];
 
   for (const ins of inscripciones) {
@@ -34,7 +35,7 @@ export async function getInscripcionesWithDetails() {
   return resultados;
 }
 
-// Renderizar alta de inscripción
+// Renderizar vista para alta de inscripción
 export async function renderAltaInscripcion(req, res) {
   try {
     const cursos = await Curso.find().lean();
@@ -46,12 +47,12 @@ export async function renderAltaInscripcion(req, res) {
   }
 }
 
-// Generar nombre de usuario
+// Generar nombre de usuario (primeras 3 letras de nombre + apellido)
 function generarUsuario(nombre, apellido) {
-  return nombre.toLowerCase().slice(0, 3) + apellido.toLowerCase().slice(0, 3);
+  return (nombre.slice(0, 3) + apellido.slice(0, 3)).toLowerCase();
 }
 
-// Agregar inscripción
+// Agregar inscripción y crear alumno y usuario si no existen
 export async function addInscription(req, res) {
   try {
     const {
@@ -64,18 +65,22 @@ export async function addInscription(req, res) {
       cursoSeleccionado
     } = req.body;
 
-    // Validar campos obligatorios
+    // Validar campos obligatorios mínimos
     if (!nombre || !apellido || !dni || !cursoSeleccionado) {
       return res.status(400).send('Faltan datos obligatorios para la inscripción');
     }
 
+    // Buscar curso y validar capacidad
     const curso = await Curso.findById(cursoSeleccionado);
-    if (!curso) throw new Error('Curso no encontrado');
+    if (!curso) {
+      return res.status(404).send('Curso no encontrado');
+    }
 
     curso.inscriptos = curso.inscriptos || 0;
     const capacidadMax = curso.carrera.toLowerCase().includes('carrera') ? 30 : 20;
 
     if (curso.inscriptos >= capacidadMax) {
+      // Agregar a lista de espera si el curso está completo
       await ListaEspera.create({
         nombre,
         apellido,
@@ -87,30 +92,38 @@ export async function addInscription(req, res) {
       return res.redirect('/admin/inscripciones/alta');
     }
 
+    // Buscar alumno por DNI
     let alumno = await Alumno.findOne({ dni });
 
-    // Evitar inscribir alumno ya inscrito en el mismo curso
+    // Validar que el alumno no esté inscrito ya en el curso
     if (alumno) {
       const inscripcionExistente = await Inscripcion.findOne({
         studentId: alumno._id,
         courseId: curso._id
       });
       if (inscripcionExistente) {
-        // Ya está inscrito, redirigir o mostrar mensaje
         return res.status(400).send('El alumno ya está inscrito en este curso');
       }
     }
 
+    // Generar usuario
     const username = generarUsuario(nombre, apellido);
+
+    // Buscar o crear usuario
     let usuario = await Usuario.findOne({ usuario: username });
     if (!usuario) {
+      // Hashear la contraseña (en este caso usamos dni como contraseña)
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync(dni, salt);
+
       usuario = await Usuario.create({
         usuario: username,
-        contrasena: dni,
+        contrasena: hashedPassword,  // <-- contraseña hasheada
         rol: 'alumno'
       });
     }
 
+    // Crear alumno si no existe
     if (!alumno) {
       alumno = await Alumno.create({
         nombre,
@@ -123,11 +136,13 @@ export async function addInscription(req, res) {
       });
     }
 
+    // Crear inscripción
     await Inscripcion.create({
       studentId: alumno._id,
       courseId: curso._id
     });
 
+    // Actualizar cantidad de inscriptos
     curso.inscriptos += 1;
     await curso.save();
 
@@ -138,8 +153,9 @@ export async function addInscription(req, res) {
   }
 }
 
+// Resto del controlador igual (no modificado)...
 
-// Consultar inscripciones
+// Renderizar vista para consultar inscripciones
 export async function renderConsultaInscripciones(req, res) {
   try {
     const inscripciones = await getInscripcionesWithDetails();
@@ -150,7 +166,7 @@ export async function renderConsultaInscripciones(req, res) {
   }
 }
 
-// Renderizar baja de inscripciones
+// Renderizar vista para baja de inscripciones
 export async function renderBajaInscripciones(req, res) {
   try {
     const inscripciones = await getInscripcionesWithDetails();
@@ -161,7 +177,7 @@ export async function renderBajaInscripciones(req, res) {
   }
 }
 
-// Eliminar inscripciones
+// Eliminar inscripciones seleccionadas
 export async function deleteInscriptions(req, res) {
   try {
     const { seleccionados } = req.body;
@@ -170,6 +186,7 @@ export async function deleteInscriptions(req, res) {
     for (const id of ids) {
       const inscripcion = await Inscripcion.findById(id);
       if (inscripcion) {
+        // Reducir inscriptos del curso
         const curso = await Curso.findById(inscripcion.courseId);
         if (curso && curso.inscriptos > 0) {
           curso.inscriptos -= 1;
@@ -186,7 +203,7 @@ export async function deleteInscriptions(req, res) {
   }
 }
 
-// Renderizar listado para modificar sin inscripción seleccionada
+// Renderizar listado para modificar inscripciones
 export async function renderModificarInscripcion(req, res) {
   try {
     const inscripciones = await getInscripcionesWithDetails();
@@ -197,7 +214,7 @@ export async function renderModificarInscripcion(req, res) {
   }
 }
 
-// Renderizar formulario con inscripción seleccionada para modificar
+// Renderizar formulario para modificar inscripción por id
 export async function renderModificarInscripcionById(req, res) {
   try {
     const id = req.params.id;
@@ -215,7 +232,7 @@ export async function renderModificarInscripcionById(req, res) {
   }
 }
 
-// Actualizar inscripción y redirigir
+// Actualizar inscripción y datos relacionados
 export async function updateInscription(req, res) {
   try {
     const {
@@ -238,6 +255,7 @@ export async function updateInscription(req, res) {
     const alumno = await Alumno.findById(inscripcion.studentId);
     if (!alumno) return res.status(404).send('Alumno no encontrado');
 
+    // Actualizar datos del alumno
     alumno.nombre = nombre;
     alumno.apellido = apellido;
     alumno.dni = dni;
@@ -246,6 +264,7 @@ export async function updateInscription(req, res) {
     alumno.telefono = telefono;
     await alumno.save();
 
+    // Buscar curso nuevo para asignar a la inscripción
     const curso = await Curso.findOne({
       nombre: nombreCurso,
       carrera: carreraCurso,

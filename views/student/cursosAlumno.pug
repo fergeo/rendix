@@ -112,10 +112,11 @@ html
             p Día: #{curso.dia}
             p Horario: #{curso.horario}
             if asistenciaDada
-              // Aquí mostramos el mensaje sólo si la query 'asistencia=ok' llegó
+              // Mostrar mensaje solo si query 'asistencia=ok' llegó
               .asistencia-msg Asistencia Dada
             form(action="/student/asistencia" method="POST")
-              input(type="hidden" name="cursoId" value=curso.id)
+              // CORRECCIÓN: usar curso._id en vez de curso.id
+              input(type="hidden" name="cursoId" value=curso._id)
               button(type="submit") Dar Asistencia
       else
         p(style="text-align:center; margin-top: 40px; color: #888;") No estás inscrito en ningún curso.

@@ -1,19 +1,35 @@
+// middlewares/authMiddleware.js
 import jwt from 'jsonwebtoken';
 
 const SECRET_KEY = 'R3nd1X/0fge';
 
 export const requireLogin = (req, res, next) => {
-  const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
+  let token = null;
 
+  // Obtener token desde cookie
+  if (req.cookies?.token) {
+    token = req.cookies.token;
+
+  // O desde el encabezado Authorization: Bearer <token>
+  } else if (req.headers.authorization?.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  // Si no hay token, redirigir a login
   if (!token) {
     return res.redirect('/login');
   }
 
   try {
+    // Verificar y decodificar token
     const decoded = jwt.verify(token, SECRET_KEY);
+
+    // Guardar los datos del usuario en req.user
     req.user = decoded;
-    next();
+
+    next(); // Permitir acceso a la ruta protegida
   } catch (err) {
+    console.error('❌ Error de autenticación JWT:', err.message);
     return res.redirect('/login');
   }
 };

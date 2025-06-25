@@ -1,99 +1,93 @@
-import { readFile, writeFile } from 'fs/promises';
-import { fileURLToPath } from 'url';
-import { resolve, dirname } from 'path';
+// controllers/student/studentController.js
+import mongoose from 'mongoose';
+import Asistencia from '../../models/student/Asistencia.js';
+import Usuario from '../../models/admin/Usuario.js';
+import Alumno from '../../models/admin/Alumno.js';
+import Curso from '../../models/admin/Curso.js';
+import Inscripcion from '../../models/admin/Inscripcion.js'; // Asegúrate de que este modelo exista
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const userPath = resolve(__dirname, '../../models/admin/userModel.json');
-const studentPath = resolve(__dirname, '../../models/admin/studentsModel.json');
-const inscriptionPath = resolve(__dirname, '../../models/admin/inscriptionModel.json');
-const coursePath = resolve(__dirname, '../../models/admin/courseModel.json');
-const asistenciaPath = resolve(__dirname, '../../models/student/asistenciaModel.json');
-
-function generarId() {
-  return Date.now().toString();
-}
-
+// Mostrar los cursos del alumno
 export const vistaCursosAlumno = async (req, res) => {
   try {
-    const usuario = req.session.usuario;
-    if (!usuario) {
+    const usuarioJWT = req.user?.usuario;
+    if (!usuarioJWT) {
       return res.redirect('/login');
     }
 
-    const users = JSON.parse(await readFile(userPath, 'utf8'));
-    const students = JSON.parse(await readFile(studentPath, 'utf8'));
-    const inscriptions = JSON.parse(await readFile(inscriptionPath, 'utf8'));
-    const courses = JSON.parse(await readFile(coursePath, 'utf8'));
-
-    const user = users.find(u => u.usuario === usuario);
+    // Buscar usuario
+    const user = await Usuario.findOne({ usuario: usuarioJWT }).lean();
     if (!user) {
       return res.status(404).send('Usuario no encontrado');
     }
 
-    const student = students.find(s => s.idUsuario === user.id);
+    // Buscar alumno asociado
+    const student = await Alumno.findOne({ idUsuario: user._id }).lean();
     if (!student) {
-      return res.status(404).send('Estudiante no encontrado');
+      return res.status(404).send('Alumno no encontrado');
     }
 
-    const inscripcionesAlumno = inscriptions.filter(ins => ins.studentId === student.id);
-    const cursosAlumno = inscripcionesAlumno.map(ins => {
-      const curso = courses.find(c => c.id === ins.courseId);
-      return curso ? { id: curso.id, nombre: curso.nombre, dia: curso.dia, horario: curso.horario } : null;
-    }).filter(c => c !== null);
+    // Buscar inscripciones del alumno
+    const inscripciones = await Inscripcion.find({ studentId: student._id }).lean();
 
-    // Detectar si viene la query para mostrar mensaje
-    const asistenciaDada = req.query.asistencia === 'ok';
+    // Obtener detalles de los cursos inscritos
+    const cursoIds = inscripciones.map(ins => ins.courseId);
+    const cursosAlumno = await Curso.find({ _id: { $in: cursoIds } }).lean();
 
-    res.render('student/menu', { cursos: cursosAlumno, asistenciaDada });
+    const asistenciaDadaEn = req.query.curso || null;
+
+    res.render('student/cursosAlumno', { cursos: cursosAlumno, asistenciaDadaEn });
   } catch (error) {
     console.error('❌ Error al obtener los cursos del alumno:', error.message);
     res.status(500).send('Error interno del servidor');
   }
 };
 
+// Registrar asistencia del alumno
 export const registrarAsistencia = async (req, res) => {
   try {
     const { cursoId } = req.body;
-    const usuario = req.session.usuario;
+    const usuarioJWT = req.user?.usuario;
 
-    if (!usuario || !cursoId) {
+    if (!usuarioJWT || !cursoId) {
       return res.status(400).json({ error: 'Faltan datos para registrar la asistencia' });
     }
 
-    const users = JSON.parse(await readFile(userPath, 'utf8'));
-    const students = JSON.parse(await readFile(studentPath, 'utf8'));
+    // Validar y convertir cursoId
+    if (!mongoose.Types.ObjectId.isValid(cursoId)) {
+      return res.status(400).json({ error: 'ID de curso inválido' });
+    }
 
-    const user = users.find(u => u.usuario === usuario);
+    const cursoObjectId = new mongoose.Types.ObjectId(cursoId);
+
+    const user = await Usuario.findOne({ usuario: usuarioJWT }).lean();
     if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
-    const student = students.find(s => s.idUsuario === user.id);
+    const student = await Alumno.findOne({ idUsuario: user._id }).lean();
     if (!student) return res.status(404).json({ error: 'Estudiante no encontrado' });
 
-    let asistencias = [];
-    try {
-      const data = await readFile(asistenciaPath, 'utf8');
-      asistencias = JSON.parse(data);
-    } catch {
-      // Si no existe el archivo, empezamos con lista vacía
-      asistencias = [];
+    const hoy = new Date().toISOString().split('T')[0];
+
+    const asistenciaExistente = await Asistencia.findOne({
+      alumnoId: student._id,
+      cursoId: cursoObjectId,
+      fecha: hoy
+    });
+
+    if (asistenciaExistente) {
+      return res.redirect(`/student?curso=${cursoId}&mensaje=ya_dada`);
     }
 
     const ahora = new Date();
-    const nuevaAsistencia = {
-      id: generarId(),
-      fecha: ahora.toISOString().split('T')[0],
+    const nuevaAsistencia = new Asistencia({
+      fecha: hoy,
       hora: ahora.toTimeString().split(' ')[0],
-      alumnoId: student.id,
-      cursoId: cursoId
-    };
+      alumnoId: student._id,
+      cursoId: cursoObjectId
+    });
 
-    asistencias.push(nuevaAsistencia);
-    await writeFile(asistenciaPath, JSON.stringify(asistencias, null, 2));
+    await nuevaAsistencia.save();
 
-    // Redirigir a menú con query para mostrar mensaje
-    res.redirect('/student/menu?asistencia=ok');
+    res.redirect(`/student?curso=${cursoId}&asistencia=ok`);
   } catch (err) {
     console.error('❌ Error al registrar asistencia:', err.message);
     res.status(500).json({ error: 'Error interno del servidor' });
