@@ -18,18 +18,18 @@ router.get('/menu', (req, res) => {
 
 // Vista de gestión de cursos
 router.get('/cursos', (req, res) => {
-  res.render('admin/cursos'); // Asegúrate de que views/admin/cursos.pug exista
+  res.render('admin/cursos'); 
 });
 
 // Vista de gestión de inscripciones
 router.get('/inscripciones', (req, res) => {
-  res.render('admin/inscripciones'); // Asegúrate de que views/admin/inscripciones.pug exista
+  res.render('admin/inscripciones'); 
 });
 
 // Vista de gestión de asistencias
-router.get('/asistencias', listarAsistencias); // Renderiza datos desde MongoDB
+router.get('/asistencias', listarAsistencias); 
 
 // Vista de gestión de lista de espera
-router.get('/lista-espera', listarListaEspera); // <- NUEVO
+router.get('/lista-espera', listarListaEspera); 
 
 export default router;

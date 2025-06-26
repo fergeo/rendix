@@ -1,4 +1,3 @@
-// controllers/admin/listaEsperaController.js
 import ListaEspera from '../../models/admin/ListaEspera.js';
 import Curso from '../../models/admin/Curso.js';
 

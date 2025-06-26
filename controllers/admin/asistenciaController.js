@@ -14,13 +14,13 @@ export const listarAsistencias = async (req, res) => {
         try {
           alumno = await Alumno.findById(a.alumnoId).lean();
         } catch (e) {
-          console.warn(`⚠️ No se pudo cargar alumno con ID: ${a.alumnoId}`);
+          console.warn(`No se pudo cargar alumno con ID: ${a.alumnoId}`);
         }
 
         try {
           curso = await Curso.findById(a.cursoId).lean();
         } catch (e) {
-          console.warn(`⚠️ No se pudo cargar curso con ID: ${a.cursoId}`);
+          console.warn(`No se pudo cargar curso con ID: ${a.cursoId}`);
         }
 
         return {
@@ -36,7 +36,7 @@ export const listarAsistencias = async (req, res) => {
 
     res.render('admin/asistencias', { asistencias: asistenciasEnriquecidas });
   } catch (error) {
-    console.error('❌ Error al cargar lista de asistencias:', error.message);
+    console.error('Error al cargar lista de asistencias:', error.message);
     res.status(500).send('Error interno del servidor');
   }
 };

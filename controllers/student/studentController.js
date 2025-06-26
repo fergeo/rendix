@@ -1,10 +1,9 @@
-// controllers/student/studentController.js
 import mongoose from 'mongoose';
 import Asistencia from '../../models/student/Asistencia.js';
 import Usuario from '../../models/admin/Usuario.js';
 import Alumno from '../../models/admin/Alumno.js';
 import Curso from '../../models/admin/Curso.js';
-import Inscripcion from '../../models/admin/Inscripcion.js'; // Asegúrate de que este modelo exista
+import Inscripcion from '../../models/admin/Inscripcion.js';
 
 // Mostrar los cursos del alumno
 export const vistaCursosAlumno = async (req, res) => {
@@ -37,7 +36,7 @@ export const vistaCursosAlumno = async (req, res) => {
 
     res.render('student/cursosAlumno', { cursos: cursosAlumno, asistenciaDadaEn });
   } catch (error) {
-    console.error('❌ Error al obtener los cursos del alumno:', error.message);
+    console.error('Error al obtener los cursos del alumno:', error.message);
     res.status(500).send('Error interno del servidor');
   }
 };
@@ -89,7 +88,7 @@ export const registrarAsistencia = async (req, res) => {
 
     res.redirect(`/student?curso=${cursoId}&asistencia=ok`);
   } catch (err) {
-    console.error('❌ Error al registrar asistencia:', err.message);
+    console.error('Error al registrar asistencia:', err.message);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };

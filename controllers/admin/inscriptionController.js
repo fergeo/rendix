@@ -153,7 +153,6 @@ export async function addInscription(req, res) {
   }
 }
 
-// Resto del controlador igual (no modificado)...
 
 // Renderizar vista para consultar inscripciones
 export async function renderConsultaInscripciones(req, res) {

@@ -15,7 +15,7 @@ import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import inscriptionRoutes from './routes/inscriptionRoutes.js';
-import studentRoutes from './routes/studentRoutes.js'; // ✅ Corrección aquí
+import studentRoutes from './routes/studentRoutes.js'; 
 
 // Conectar a la base de datos
 conectarDB();

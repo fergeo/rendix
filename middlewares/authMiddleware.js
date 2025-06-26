@@ -1,4 +1,3 @@
-// middlewares/authMiddleware.js
 import jwt from 'jsonwebtoken';
 
 const SECRET_KEY = 'R3nd1X/0fge';
@@ -29,7 +28,7 @@ export const requireLogin = (req, res, next) => {
 
     next(); // Permitir acceso a la ruta protegida
   } catch (err) {
-    console.error('❌ Error de autenticación JWT:', err.message);
+    console.error('Error de autenticación JWT:', err.message);
     return res.redirect('/login');
   }
 };
