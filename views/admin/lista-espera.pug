@@ -1,0 +1,81 @@
+doctype html
+html
+    head
+        meta(charset="UTF-8")
+        title Lista de Espera
+        style.
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f2f2f2;
+                padding: 20px;
+            }
+            h1 {
+                text-align: center;
+                color: #333;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                background-color: white;
+            }
+            th, td {
+                padding: 10px;
+                border: 1px solid #ccc;
+                text-align: center;
+            }
+            th {
+                background-color: #4CAF50;
+                color: white;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            .center {
+                text-align: center;
+                margin-top: 30px;
+            }
+            a.back {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+            }
+            .no-data {
+                text-align: center;
+                margin-top: 40px;
+                font-size: 18px;
+                color: #666;
+            }
+
+    body
+        h1 Lista de Espera
+
+        if lista && lista.length
+            table
+                thead
+                    tr
+                        th Nombre
+                        th Apellido
+                        th DNI
+                        th Correo Electrónico
+                        th Teléfono
+                        th Curso
+                        th Fecha de Registro
+                tbody
+                    each persona in lista
+                        tr
+                            td= persona.nombre
+                            td= persona.apellido
+                            td= persona.dni
+                            td= persona.correoElectronico
+                            td= persona.telefono
+                            td= persona.cursoId && persona.cursoId.nombre ? persona.cursoId.nombre : 'N/A'
+                            td= persona.createdAt.toLocaleDateString()
+        else
+            p.no-data No hay datos para mostrar en la lista de espera.
+
+        .center
+            a.back(href="/admin/menu") Volver al menú

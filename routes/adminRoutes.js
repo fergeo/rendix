@@ -1,6 +1,7 @@
 // routes/adminRoutes.js
 import express from 'express';
 import { listarAsistencias } from '../controllers/admin/asistenciaController.js';
+import { listarListaEspera } from '../controllers/admin/listaEsperaController.js'; // <- NUEVO
 
 const router = express.Router();
 
@@ -27,5 +28,8 @@ router.get('/inscripciones', (req, res) => {
 
 // Vista de gestión de asistencias
 router.get('/asistencias', listarAsistencias); // Renderiza datos desde MongoDB
+
+// Vista de gestión de lista de espera
+router.get('/lista-espera', listarListaEspera); // <- NUEVO
 
 export default router;
