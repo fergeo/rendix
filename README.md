@@ -7,7 +7,8 @@ Desarrollo de la platarma Rendix.
 Desarrollo:
   - Login
   - CRUD de Cursos.
-  - Modulo de Inscripción (CRUD).
-  - Asistencia.
-  - Pantalla principal del Alumno.
+  - CRUD de Inscripciones.
+  - Lista de Asistencia.
   - Lista de Espera.
+  - Pantalla principal del Alumno.
+  
