@@ -3,6 +3,10 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
+
+// Cargar variables de entorno desde .env
+dotenv.config();
 
 // Conexión a MongoDB
 import { conectarDB } from './config/db.js';
@@ -15,7 +19,7 @@ import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import inscriptionRoutes from './routes/inscriptionRoutes.js';
-import studentRoutes from './routes/studentRoutes.js'; 
+import studentRoutes from './routes/studentRoutes.js';
 
 // Conectar a la base de datos
 conectarDB();
@@ -24,7 +28,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = 3000;
 
 // Middlewares globales
 app.use(cookieParser());
@@ -47,14 +50,10 @@ app.use('/admin/cursos', requireLogin, courseRoutes);
 app.use('/admin/inscripciones', requireLogin, inscriptionRoutes);
 app.use('/student', requireLogin, studentRoutes);
 
-// Ruta 404 (si no se encuentra ninguna anterior)
+// Ruta 404
 app.use((req, res) => {
   res.status(404).send('Página no encontrada');
 });
 
-// Iniciar servidor
-app.listen(port, () => {
-  console.log(`Servidor activo en: http://localhost:${port}/login`);
-});
-
+// Exportar la app para que Vercel la utilice
 export default app;
