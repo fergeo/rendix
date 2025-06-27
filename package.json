@@ -28,6 +28,7 @@
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.0",
     "pug": "^3.0.3",
+    "serverless-http": "^3.2.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

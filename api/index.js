@@ -1,7 +1,9 @@
+// api/index.js
 import app from '../app.js';
-import { createServer } from 'http';
+import serverless from 'serverless-http';
 
-export default function handler(req, res) {
-    const server = createServer(app);
-    server.emit('request', req, res);
+const handler = serverless(app);
+
+export default async function (req, res) {
+    return handler(req, res);
 }
