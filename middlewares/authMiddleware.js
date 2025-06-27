@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken';
 
-// Usar clave secreta desde variable de entorno
-const SECRET_KEY = process.env.JWT_SECRET;
-
-if (!SECRET_KEY) {
-  throw new Error('La variable de entorno JWT_SECRET no está definida');
-}
-
 export const requireLogin = (req, res, next) => {
+  const SECRET_KEY = process.env.JWT_SECRET;
+
+  if (!SECRET_KEY) {
+    // Podés hacer un manejo más amigable, o lanzar error según prefieras
+    return res.status(500).send('Error del servidor: JWT_SECRET no configurado');
+  }
+
   let token = null;
 
   // Obtener token desde cookie
