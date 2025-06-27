@@ -1,1 +1,31 @@
-.vercel
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# Dependencias instaladas por package-lock
+package-lock.json
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Editor config / metadata
+.vscode/
+.idea/
+
+# Build output
+dist/
+build/
+
+# Misc
+*.seed
+*.backup
