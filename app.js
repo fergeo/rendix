@@ -5,7 +5,6 @@ import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
-// Cargar variables de entorno desde .env
 dotenv.config();
 
 // Middleware autenticación JWT
@@ -23,7 +22,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.set('trust proxy', 1); // Necesario en Vercel para cookies secure
+app.set('trust proxy', 1); // Necesario para cookies 'secure' en Vercel
 
 // Middlewares globales
 app.use(cookieParser());
@@ -37,15 +36,13 @@ app.set('views', path.join(__dirname, 'views'));
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Rutas públicas (login, logout, etc.)
+// Rutas públicas (login, logout)
 app.use('/', authRoutes);
 
-// Rutas protegidas con JWT - todas las admin
-app.use('/admin', requireLogin, adminRoutes);
+// Rutas protegidas por JWT
 app.use('/admin/cursos', requireLogin, courseRoutes);
 app.use('/admin/inscripciones', requireLogin, inscriptionRoutes);
-
-// Rutas protegidas con JWT para estudiantes
+app.use('/admin', requireLogin, adminRoutes);
 app.use('/student', requireLogin, studentRoutes);
 
 // Ruta 404
