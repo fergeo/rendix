@@ -15,17 +15,16 @@ if (!cached) {
 
 export const conectarDB = async () => {
     if (cached.conn) {
-        // Reusar conexión existente
-        return cached.conn;
+        return cached.conn; // Reusar conexión existente
     }
 
     if (!cached.promise) {
         cached.promise = mongoose.connect(MONGO_URI, {
-        dbName: 'rendixDB',
-        // Opcionales que puedes agregar:
-        // useNewUrlParser: true,
-        // useUnifiedTopology: true,
-        }).then((mongoose) => mongoose);
+            dbName: 'rendixDB',
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            // Optional: evita warnings de deprecated funciones
+        }).then((mongoose) => mongoose.connection);
     }
 
     cached.conn = await cached.promise;

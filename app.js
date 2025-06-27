@@ -56,7 +56,7 @@ app.use((req, res) => {
   res.status(404).send('Página no encontrada');
 });
 
-// Conectar a la base de datos antes de exportar
+// Esperar la conexión a MongoDB antes de exportar la app
 await conectarDB();
 
 export default app;
