@@ -2,8 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import Usuario from '../../models/admin/Usuario.js';
 
-// Usar clave secreta desde variable de entorno
-const SECRET_KEY = process.env.JWT_SECRET;
+const SECRET_KEY = 'R3nd1X/0fge';
 
 export const loginHandler = async (req, res) => {
   const { usuario, contrasena } = req.body;

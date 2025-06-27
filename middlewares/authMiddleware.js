@@ -1,13 +1,8 @@
 import jwt from 'jsonwebtoken';
 
+const SECRET_KEY = 'R3nd1X/0fge';
+
 export const requireLogin = (req, res, next) => {
-  const SECRET_KEY = process.env.JWT_SECRET;
-
-  if (!SECRET_KEY) {
-    // Podés hacer un manejo más amigable, o lanzar error según prefieras
-    return res.status(500).send('Error del servidor: JWT_SECRET no configurado');
-  }
-
   let token = null;
 
   // Obtener token desde cookie
