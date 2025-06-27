@@ -3,9 +3,9 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
 
-dotenv.config();
+// Conexión a MongoDB
+import { conectarDB } from './config/db.js';
 
 // Middleware autenticación JWT
 import { requireLogin } from './middlewares/authMiddleware.js';
@@ -15,14 +15,16 @@ import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import inscriptionRoutes from './routes/inscriptionRoutes.js';
-import studentRoutes from './routes/studentRoutes.js';
+import studentRoutes from './routes/studentRoutes.js'; 
+
+// Conectar a la base de datos
+conectarDB();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-
-app.set('trust proxy', 1); // Necesario para cookies 'secure' en Vercel
+const port = 3000;
 
 // Middlewares globales
 app.use(cookieParser());
@@ -36,18 +38,23 @@ app.set('views', path.join(__dirname, 'views'));
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Rutas públicas (login, logout)
+// Rutas públicas
 app.use('/', authRoutes);
 
-// Rutas protegidas por JWT
+// Rutas protegidas con JWT
+app.use('/admin', requireLogin, adminRoutes);
 app.use('/admin/cursos', requireLogin, courseRoutes);
 app.use('/admin/inscripciones', requireLogin, inscriptionRoutes);
-app.use('/admin', requireLogin, adminRoutes);
 app.use('/student', requireLogin, studentRoutes);
 
-// Ruta 404
+// Ruta 404 (si no se encuentra ninguna anterior)
 app.use((req, res) => {
   res.status(404).send('Página no encontrada');
+});
+
+// Iniciar servidor
+app.listen(port, () => {
+  console.log(`Servidor activo en: http://localhost:${port}/login`);
 });
 
 export default app;
