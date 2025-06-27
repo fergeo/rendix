@@ -1,3 +1,4 @@
+// routes/inscriptionRoutes.js
 import express from 'express';
 import {
   renderAltaInscripcion,
@@ -13,24 +14,24 @@ import {
 const router = express.Router();
 
 /**
- * Rutas para el CRUD de Inscripciones
- * Todas montadas bajo /admin/inscripciones en app.js
+ * Rutas para CRUD de Inscripciones
+ * Montadas bajo /admin/inscripciones en app.js
  */
 
-// === Alta de Inscripción ===
-router.get('/alta', renderAltaInscripcion);     // Muestra el formulario
-router.post('/alta', addInscription);           // Procesa y guarda inscripción
+// Alta de inscripción (formulario y acción)
+router.get('/alta', renderAltaInscripcion);
+router.post('/alta', addInscription);
 
-// === Consulta de Inscripciones ===
+// Consulta/Listado de inscripciones
 router.get('/consultar', renderConsultaInscripciones);
 
-// === Baja de Inscripciones ===
-router.get('/baja', renderBajaInscripciones);   // Muestra listado con checkbox
-router.post('/baja', deleteInscriptions);       // Procesa bajas seleccionadas
+// Baja de inscripciones (formulario y acción)
+router.get('/baja', renderBajaInscripciones);
+router.post('/baja', deleteInscriptions);
 
-// === Modificación de Inscripciones ===
-router.get('/modificar', renderModificarInscripcion);           // Muestra lista
-router.get('/modificar/:id', renderModificarInscripcionById);   // Carga inscripción seleccionada
-router.post('/modificar', updateInscription);                   // Procesa modificación
+// Modificación de inscripciones
+router.get('/modificar', renderModificarInscripcion);            // Lista inscripciones para modificar
+router.get('/modificar/:id', renderModificarInscripcionById);    // Formulario para inscripción específica
+router.post('/modificar', updateInscription);                    // Procesa actualización
 
 export default router;

@@ -4,19 +4,19 @@ import CursoController from '../controllers/admin/courseController.js';
 
 const router = express.Router();
 
-// Alta
+// Alta de curso (formulario y acción)
 router.get('/alta', CursoController.mostrarAlta);
 router.post('/alta', CursoController.agregarCurso);
 
-// Baja
+// Baja de curso (formulario y acción)
 router.get('/baja', CursoController.mostrarBaja);
-router.post('/borrar', CursoController.borrarCursos);
+router.post('/baja', CursoController.borrarCursos);
 
-// Modificar
-router.get('/modificacion', CursoController.mostrarModificar);
+// Modificación de curso (formulario y acción)
+router.get('/modificar', CursoController.mostrarModificar);
 router.post('/modificar', CursoController.modificarCurso);
 
-// Consulta
+// Consulta/listado de cursos
 router.get('/consultar', CursoController.listarCursos);
 
 export default router;

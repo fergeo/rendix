@@ -7,10 +7,15 @@ import {
 
 const router = express.Router();
 
-// Ruta para mostrar los cursos del alumno (GET /student/)
+/**
+ * Rutas para funcionalidades del alumno
+ * Montadas bajo /student en app.js
+ */
+
+// Mostrar los cursos del alumno (GET /student/)
 router.get('/', vistaCursosAlumno);
 
-// Ruta para registrar asistencia (POST /student/asistencia)
+// Registrar asistencia del alumno (POST /student/asistencia)
 router.post('/asistencia', registrarAsistencia);
 
 export default router;

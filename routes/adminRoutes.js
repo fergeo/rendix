@@ -1,7 +1,7 @@
 // routes/adminRoutes.js
 import express from 'express';
 import { listarAsistencias } from '../controllers/admin/asistenciaController.js';
-import { listarListaEspera } from '../controllers/admin/listaEsperaController.js'; // <- NUEVO
+import { listarListaEspera } from '../controllers/admin/listaEsperaController.js';
 
 const router = express.Router();
 
@@ -16,20 +16,20 @@ router.get('/menu', (req, res) => {
   res.render('admin/menu', { usuario });
 });
 
-// Vista de gestión de cursos
+// Vista de gestión de cursos (puedes cambiar a controlador si lo necesitas)
 router.get('/cursos', (req, res) => {
-  res.render('admin/cursos'); 
+  res.render('admin/cursos');
 });
 
-// Vista de gestión de inscripciones
+// Vista de gestión de inscripciones (idem anterior)
 router.get('/inscripciones', (req, res) => {
-  res.render('admin/inscripciones'); 
+  res.render('admin/inscripciones');
 });
 
-// Vista de gestión de asistencias
-router.get('/asistencias', listarAsistencias); 
+// Vista de gestión de asistencias (controlador con lógica)
+router.get('/asistencias', listarAsistencias);
 
-// Vista de gestión de lista de espera
-router.get('/lista-espera', listarListaEspera); 
+// Vista de gestión de lista de espera (controlador con lógica)
+router.get('/lista-espera', listarListaEspera);
 
 export default router;

@@ -22,7 +22,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// 3. Configurar proxy para cookies secure en producción
+// 3. Configurar proxy para cookies secure en producción (necesario para Vercel/Render)
 app.set('trust proxy', 1);
 
 // 4. Middlewares globales
@@ -37,7 +37,12 @@ app.set('views', path.join(__dirname, 'views'));
 // 6. Servir archivos estáticos desde /public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 7. Definir rutas públicas y protegidas
+// 7. Redirigir raíz '/' a '/login'
+app.get('/', (req, res) => {
+  res.redirect('/login');
+});
+
+// 8. Rutas públicas y protegidas
 app.use('/', authRoutes);
 
 app.use('/admin/cursos', requireLogin, courseRoutes);
@@ -46,19 +51,23 @@ app.use('/admin', requireLogin, adminRoutes);
 
 app.use('/student', requireLogin, studentRoutes);
 
-// 8. Manejar rutas no encontradas (404)
+// 9. Manejar rutas no encontradas (404)
 app.use((req, res) => {
   res.status(404).send('Página no encontrada');
 });
 
-// 9. Conectar a MongoDB y arrancar servidor
+// 10. Conectar a MongoDB y arrancar servidor
 const PORT = process.env.PORT || 3000;
 
 (async () => {
   try {
     await conectarDB();
     app.listen(PORT, () => {
-      console.log(`🚀 Servidor activo en http://localhost:${PORT}/login`);
+      // Mostrar URL correcta según entorno
+      const baseUrl = process.env.NODE_ENV === 'production'
+        ? `https://rendix.onrender.com`
+        : `http://localhost:${PORT}`;
+      console.log(`🚀 Servidor activo en ${baseUrl}/login`);
     });
   } catch (error) {
     console.error('❌ Error iniciando servidor:', error);
