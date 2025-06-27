@@ -21,13 +21,12 @@ import courseRoutes from './routes/courseRoutes.js';
 import inscriptionRoutes from './routes/inscriptionRoutes.js';
 import studentRoutes from './routes/studentRoutes.js';
 
-// Conectar a la base de datos
-conectarDB();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+app.set('trust proxy', 1); // Necesario en Vercel para cookies secure
 
 // Middlewares globales
 app.use(cookieParser());
@@ -41,13 +40,15 @@ app.set('views', path.join(__dirname, 'views'));
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Rutas públicas
+// Rutas públicas (login, logout, etc.)
 app.use('/', authRoutes);
 
-// Rutas protegidas con JWT
-app.use('/admin',  adminRoutes);
+// Rutas protegidas con JWT - todas las admin
+app.use('/admin', requireLogin, adminRoutes);
 app.use('/admin/cursos', requireLogin, courseRoutes);
 app.use('/admin/inscripciones', requireLogin, inscriptionRoutes);
+
+// Rutas protegidas con JWT para estudiantes
 app.use('/student', requireLogin, studentRoutes);
 
 // Ruta 404
@@ -55,5 +56,7 @@ app.use((req, res) => {
   res.status(404).send('Página no encontrada');
 });
 
-// Exportar la app para que Vercel la utilice
+// Conectar a la base de datos antes de exportar
+await conectarDB();
+
 export default app;

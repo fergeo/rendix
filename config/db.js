@@ -1,21 +1,34 @@
 // config/db.js
 import mongoose from 'mongoose';
 
+const MONGO_URI = process.env.MONGODB_URI;
+
+if (!MONGO_URI) {
+    throw new Error('La variable de entorno MONGODB_URI no está definida');
+}
+
+let cached = global.mongoose;
+
+if (!cached) {
+    cached = global.mongoose = { conn: null, promise: null };
+}
+
 export const conectarDB = async () => {
-    const MONGO_URI = process.env.MONGODB_URI;
-
-    if (!MONGO_URI) {
-        throw new Error('La variable de entorno MONGODB_URI no está definida');
+    if (cached.conn) {
+        // Reusar conexión existente
+        return cached.conn;
     }
 
-    try {
-        await mongoose.connect(MONGO_URI, {
-            dbName: 'rendixDB',
-        });
-
-        console.log('✅ Conectado a MongoDB Atlas');
-    } catch (error) {
-        console.error('❌ Error al conectar con MongoDB:', error.message);
-        process.exit(1); // Detiene la app si falla la conexión
+    if (!cached.promise) {
+        cached.promise = mongoose.connect(MONGO_URI, {
+        dbName: 'rendixDB',
+        // Opcionales que puedes agregar:
+        // useNewUrlParser: true,
+        // useUnifiedTopology: true,
+        }).then((mongoose) => mongoose);
     }
+
+    cached.conn = await cached.promise;
+    console.log('✅ Conectado a MongoDB Atlas');
+    return cached.conn;
 };
