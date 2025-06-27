@@ -2,10 +2,11 @@
   "name": "rendix",
   "version": "1.0.0",
   "description": "Desarrollo de la API de la plataforma rendix",
-  "main": "index.js",
+  "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon index.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
