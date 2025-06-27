@@ -8,9 +8,6 @@ import dotenv from 'dotenv';
 // Cargar variables de entorno desde .env
 dotenv.config();
 
-// Conexión a MongoDB
-import { conectarDB } from './config/db.js';
-
 // Middleware autenticación JWT
 import { requireLogin } from './middlewares/authMiddleware.js';
 
@@ -55,8 +52,5 @@ app.use('/student', requireLogin, studentRoutes);
 app.use((req, res) => {
   res.status(404).send('Página no encontrada');
 });
-
-// Esperar la conexión a MongoDB antes de exportar la app
-await conectarDB();
 
 export default app;
