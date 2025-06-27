@@ -1,8 +1,12 @@
+// controllers/admin/authController.js
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import Usuario from '../../models/admin/Usuario.js';
 
-const SECRET_KEY = 'R3nd1X/0fge';
+const SECRET_KEY = process.env.JWT_SECRET;
+if (!SECRET_KEY) {
+  throw new Error('La variable de entorno JWT_SECRET no está definida');
+}
 
 export const loginHandler = async (req, res) => {
   const { usuario, contrasena } = req.body;
@@ -14,7 +18,7 @@ export const loginHandler = async (req, res) => {
       return res.status(401).send('Usuario o contraseña incorrectos');
     }
 
-    // Comparar contrasena con hash almacenado
+    // Comparar contraseña con hash almacenado
     const passwordMatch = await bcrypt.compare(contrasena, usuarioDB.contrasena);
     if (!passwordMatch) {
       return res.status(401).send('Usuario o contraseña incorrectos');
@@ -35,20 +39,20 @@ export const loginHandler = async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 1000 // 1 hora
     });
 
     // Redirigir según rol
-    switch (usuarioDB.rol) {
-      case 'administrador':
-        return res.redirect('/admin/menu');
-      case 'alumno':
-        return res.redirect('/student');
-      default:
-        return res.status(403).send('Rol no permitido');
+    if (usuarioDB.rol === 'administrador') {
+      return res.redirect('/admin/menu');
+    } else if (usuarioDB.rol === 'alumno') {
+      return res.redirect('/student');
+    } else {
+      return res.status(403).send('Rol no permitido');
     }
   } catch (error) {
-    console.error('Error al autenticar:', error.message);
+    console.error('Error al autenticar:', error);
     return res.status(500).send('Error interno del servidor');
   }
 };
