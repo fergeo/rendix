@@ -4,9 +4,10 @@ import mongoose from 'mongoose';
 const MONGO_URI = process.env.MONGODB_URI;
 
 if (!MONGO_URI) {
-    throw new Error('La variable de entorno MONGODB_URI no está definida');
+    throw new Error('❌ La variable de entorno MONGODB_URI no está definida');
 }
 
+// Usamos cache global para que en entornos serverless no se creen múltiples conexiones
 let cached = global.mongoose;
 
 if (!cached) {
@@ -15,19 +16,33 @@ if (!cached) {
 
 export const conectarDB = async () => {
     if (cached.conn) {
-        return cached.conn; // Reusar conexión existente
+        console.log('🔁 Usando conexión MongoDB cacheada');
+        return cached.conn;
     }
 
     if (!cached.promise) {
-        cached.promise = mongoose.connect(MONGO_URI, {
+        console.log('⏳ Estableciendo nueva conexión a MongoDB Atlas...');
+        cached.promise = mongoose
+        .connect(MONGO_URI, {
             dbName: 'rendixDB',
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            // Optional: evita warnings de deprecated funciones
-        }).then((mongoose) => mongoose.connection);
+        })
+        .then((mongoose) => {
+            console.log('✅ Conectado a MongoDB Atlas');
+            return mongoose.connection;
+        })
+        .catch((err) => {
+            console.error('❌ Error al conectar con MongoDB Atlas:', err.message);
+            throw err;
+        });
     }
 
-    cached.conn = await cached.promise;
-    console.log('✅ Conectado a MongoDB Atlas');
-    return cached.conn;
+    try {
+        cached.conn = await cached.promise;
+        return cached.conn;
+    } catch (err) {
+        cached.promise = null; // Reset cache en caso de fallo
+        throw err;
+    }
 };
