@@ -45,7 +45,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', authRoutes);
 
 // Rutas protegidas con JWT
-app.use('/admin', requireLogin, adminRoutes);
+app.use('/admin',  adminRoutes);
 app.use('/admin/cursos', requireLogin, courseRoutes);
 app.use('/admin/inscripciones', requireLogin, inscriptionRoutes);
 app.use('/student', requireLogin, studentRoutes);
