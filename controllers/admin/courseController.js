@@ -85,7 +85,7 @@ class CursoController {
 
     return req.headers.accept?.includes('application/json') || req.headers['content-type'] === 'application/json'
       ? res.status(200).json({ mensaje: 'Curso modificado correctamente', curso: cursoActualizado })
-      : res.redirect('/admin/cursos/modificacion');
+      : res.redirect('/admin/cursos/modificar');
   }
 
   // Consultar cursos
