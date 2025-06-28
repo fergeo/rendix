@@ -14,12 +14,18 @@ export const loginHandler = async (req, res) => {
     // Buscar usuario por nombre de usuario
     const usuarioDB = await Usuario.findOne({ usuario });
     if (!usuarioDB) {
+      if (req.headers.accept && req.headers.accept.includes('application/json')) {
+        return res.status(401).json({ mensaje: 'Usuario o contraseña incorrectos' });
+      }
       return res.status(401).send('Usuario o contraseña incorrectos');
     }
 
     // Comparar contraseña con hash almacenado
     const passwordMatch = await bcrypt.compare(contrasena, usuarioDB.contrasena);
     if (!passwordMatch) {
+      if (req.headers.accept && req.headers.accept.includes('application/json')) {
+        return res.status(401).json({ mensaje: 'Usuario o contraseña incorrectos' });
+      }
       return res.status(401).send('Usuario o contraseña incorrectos');
     }
 
@@ -42,7 +48,12 @@ export const loginHandler = async (req, res) => {
       maxAge: 60 * 60 * 1000 // 1 hora
     });
 
-    // Redirigir según rol
+    // Si el cliente espera JSON, respondemos con token en JSON (para tests y API)
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.json({ token });
+    }
+
+    // Redirigir según rol para navegadores tradicionales
     if (usuarioDB.rol === 'administrador') {
       return res.redirect('/admin/menu');
     } else if (usuarioDB.rol === 'alumno') {
@@ -52,6 +63,9 @@ export const loginHandler = async (req, res) => {
     }
   } catch (error) {
     console.error('Error al autenticar:', error);
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
     return res.status(500).send('Error interno del servidor');
   }
 };
