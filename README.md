@@ -90,11 +90,12 @@ Plataforma	Enlace
 
 📄 Documentación
 
-👉 
+👉 [https://drive.google.com/drive/u/0/folders/1jvcEFzV-Nv2JHYDEFhy6evM6o2ygj7o5](https://drive.google.com/file/d/1qReoWjhkNLwD4w0AoMLWszqshxwaCLYi/view?usp=drive_link)
 
 ---
 
 🎥 Video del Coloquio
+
 👉 https://drive.google.com/file/d/1FWGacRK6xxU4pzQClvNJwizYvMrFKlCa/view?usp=sharing
 
 ---
