@@ -95,6 +95,7 @@ Plataforma	Enlace
 ---
 
 🎥 Video del Coloquio
+👉 https://drive.google.com/file/d/1FWGacRK6xxU4pzQClvNJwizYvMrFKlCa/view?usp=sharing
 
 ---
 👨‍💻 Autor
