@@ -90,7 +90,7 @@ Plataforma	Enlace
 
 📄 Documentación
 
-👉 https://docs.google.com/document/d/1kVskE-gCKHovtpbMEWgcesNXgHdHmvrRqt_PSXyjNZI/edit?tab=t.0
+👉 
 
 ---
 
